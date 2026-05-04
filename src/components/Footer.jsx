@@ -15,7 +15,7 @@ export default function Footer() {
             <a key={link} href="#" className="footer-link">{link}</a>
           ))}
         </div>
-        <p className="footer-copy">© 2024 ExtGen. Built for internship project.</p>
+        <p className="footer-copy">© 2026 ExtGen. Built for Zaalima internship project.</p>
       </div>
     </footer>
   );

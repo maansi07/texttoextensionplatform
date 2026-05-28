@@ -25,3 +25,15 @@ Built as part of the Zaalima Development Q4 AI Engineering roadmap.
 | Packaging | Archiver npm | .zip file creation |
 | Version Control | Git + GitHub | Source control |
 
+## API Endpoints
+
+Base URL: `http://localhost:8080/api`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/extensions/generate` | Generate extension from prompt |
+| GET | `/extensions` | Get all generated extensions |
+| GET | `/extensions/:id` | Get one extension by ID |
+| GET | `/extensions/:id/download` | Download extension as .zip |
+| DELETE | `/extensions/:id` | Delete an extension |
+| GET | `/health` | Server health check |

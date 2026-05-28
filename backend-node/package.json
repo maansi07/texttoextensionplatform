@@ -1,6 +1,7 @@
 {
   "name": "backend-node",
   "version": "1.0.0",
+  "author": "Extensio.ai Team",
   "description": "Extensio.ai Node.js backend API",
   "main": "index.js",
   "scripts": {

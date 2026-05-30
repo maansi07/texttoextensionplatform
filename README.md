@@ -37,3 +37,35 @@ Base URL: `http://localhost:8080/api`
 | GET | `/extensions/:id/download` | Download extension as .zip |
 | DELETE | `/extensions/:id` | Delete an extension |
 | GET | `/health` | Server health check |
+
+## Project Structure
+
+
+texttoextensionplatform/
+├── index.html
+├── package.json
+├── vite.config.js
+├── src/
+│   ├── App.jsx
+│   ├── App.css
+│   ├── main.jsx
+│   ├── components/
+│   │   ├── Header.jsx
+│   │   ├── Hero.jsx
+│   │   ├── Generator.jsx
+│   │   ├── Features.jsx
+│   │   ├── Dashboard.jsx
+│   │   └── Footer.jsx
+│   ├── pages/
+│   │   ├── LoginPage.jsx
+│   │   ├── SignupPage.jsx
+│   │   └── TemplatesPage.jsx
+│   └── context/
+│       └── AuthContext.jsx
+└── backend-node/
+    ├── server.js
+    ├── routes/extensions.js
+    ├── controllers/extensionController.js
+    └── services/
+        ├── aiService.js
+        └── zipService.js

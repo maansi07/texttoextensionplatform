@@ -7,6 +7,7 @@ const extensionRoutes = require('./routes/extensions');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Allow requests from React frontend
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 

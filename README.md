@@ -62,3 +62,22 @@ npm run dev
 3. Set root directory to `backend-node`
 4. Add environment variable: `GEMINI_API_KEY`
 5. Deploy
+
+## Contributing
+
+This project follows a feature branch workflow.
+
+- All changes are made on feat/extensio-ai-rebuild branch
+- One commit per person per day minimum
+- Always pull before starting work
+- Use descriptive commit messages
+
+### Commit Message Format
+
+type(scope): description
+
+Types: feat, fix, docs, style, chore
+Examples:
+  feat(ui): add login page component
+  fix(backend): handle empty prompt error
+  docs: update README with API reference

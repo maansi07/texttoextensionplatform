@@ -17,16 +17,17 @@ export default function Hero({ setActiveTab }) {
         </div>
 
         <h1 className="hero-title">
-          Build Browser Extensions
-          <br />
-          <span className="hero-title-gradient">From Plain Text</span>
-        </h1>
+  No-Code
+  <br />
+  <span className="hero-title-gradient">Extension Factory</span>
+</h1>
 
-        <p className="hero-subtitle">
-          Describe your extension idea in natural language. Our AI-powered platform
-          generates production-ready Chrome, Firefox, and Edge extensions — complete
-          with manifest, background scripts, and UI components.
-        </p>
+<p className="hero-subtitle">
+  Describe your browser extension in plain English.
+  Extensio.ai generates production-ready Chrome, Firefox,
+  and Edge extensions — complete with manifest, scripts,
+  and popup UI. Download and install in seconds.
+</p>
 
         <div className="hero-terminal">
           <div className="terminal-bar">

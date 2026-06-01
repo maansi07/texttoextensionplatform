@@ -12,6 +12,7 @@ app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 
 // Request logger middleware
+
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();

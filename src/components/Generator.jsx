@@ -214,22 +214,20 @@ export default function Generator({ prompt, setPrompt }) {
                   <code>{generated[activeFile]}</code>
                 </pre>
                 <div className="output-footer">
-                  <button
-                    className="btn btn-primary"
-                    style={{ width: "100%" }}
-                    onClick={() =>
-                      window.open(`/api/extensions/${generatedId}/download`)
-                    }
-                    disabled={!generatedId}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24"
-                      fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4
-                        M7 10l5 5 5-5M12 15V3"/>
-                    </svg>
-                    Download Extension Package (.zip)
-                  </button>
-                </div>
+  <button
+    className="btn btn-primary"
+    style={{ width: "100%" }}
+    onClick={() => window.open(`/api/extensions/${generatedId}/download`)}
+    disabled={!generatedId}
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4
+        M7 10l5 5 5-5M12 15V3"/>
+    </svg>
+    Download Extension Package (.zip)
+  </button>
+</div>
               </div>
             )}
           </div>

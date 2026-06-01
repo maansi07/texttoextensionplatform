@@ -46,3 +46,19 @@ npm run dev
 # Terminal 2 - Frontend
 npm run dev
 ```
+
+## Deployment
+
+### Frontend — Vercel
+1. Push code to GitHub
+2. Go to vercel.com and import the repository
+3. Set build command: `npm run build`
+4. Set output directory: `dist`
+5. Deploy
+
+### Backend — Railway
+1. Go to railway.app
+2. Create new project from GitHub repo
+3. Set root directory to `backend-node`
+4. Add environment variable: `GEMINI_API_KEY`
+5. Deploy

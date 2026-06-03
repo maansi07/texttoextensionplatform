@@ -81,3 +81,13 @@ Examples:
   feat(ui): add login page component
   fix(backend): handle empty prompt error
   docs: update README with API reference
+
+## License
+
+MIT License — free to use, modify and distribute.
+
+## Acknowledgements
+
+- Google Gemini AI for extension code generation
+- Zaalima Development for project scope and direction
+- Archiver npm package for zip file creation

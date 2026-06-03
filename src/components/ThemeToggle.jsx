@@ -18,17 +18,3 @@ export default function ThemeToggle() {
     </button>
   );
 }
-Create src/components/ThemeToggle.css:
-css.theme-toggle {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s;
-}
-
-.theme-toggle:hover {
-  border-color: var(--accent-cyan);
-}

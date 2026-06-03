@@ -28,9 +28,9 @@ export default function Dashboard() {
   }, []);
 
   const handleDelete = async (id) => {
-    await fetch(`/api/extensions/${id}`, { method: 'DELETE' });
-    setExtensions(prev => prev.filter(ext => ext.id !== id));
-  };
+  await fetch(`/api/extensions/${id}`, { method: 'DELETE' });
+  setExtensions(prev => prev.filter(ext => ext.id !== id));
+};
 
   return (
     <section className="dashboard">

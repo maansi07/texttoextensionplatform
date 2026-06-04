@@ -91,3 +91,10 @@ MIT License — free to use, modify and distribute.
 - Google Gemini AI for extension code generation
 - Zaalima Development for project scope and direction
 - Archiver npm package for zip file creation
+## Team
+| Name | Role | GitHub |
+|------|------|--------|
+| Maansi | Lead — Backend + Frontend | @maansi07 |
+| Vaibhavi | UI Developer — Components + Styling | collaborator |
+| Priyanshu | Documentation + Configuration | collaborator |
+| Uday | QA + Fixes + Cleanup | collaborator |

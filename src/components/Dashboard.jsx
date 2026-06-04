@@ -16,6 +16,7 @@ const BROWSER_ICONS = {
 export default function Dashboard() {
   const [extensions, setExtensions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetch('/api/extensions')
@@ -28,9 +29,14 @@ export default function Dashboard() {
   }, []);
 
   const handleDelete = async (id) => {
-  await fetch(`/api/extensions/${id}`, { method: 'DELETE' });
-  setExtensions(prev => prev.filter(ext => ext.id !== id));
-};
+    await fetch(`/api/extensions/${id}`, { method: 'DELETE' });
+    setExtensions(prev => prev.filter(ext => ext.id !== id));
+  };
+
+  const filtered = extensions.filter(ext =>
+    ext.name?.toLowerCase().includes(search.toLowerCase()) ||
+    ext.description?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <section className="dashboard">
@@ -53,6 +59,16 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="dash-search">
+          <input
+            className="search-input"
+            type="text"
+            placeholder="Search extensions..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
         </div>
 
         <div className="ext-table">
@@ -81,7 +97,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          {extensions.map((ext) => (
+          {filtered.map((ext) => (
             <div key={ext.id} className="table-row">
               <div className="ext-name-cell">
                 <div className="ext-icon">{ext.name ? ext.name[0] : "E"}</div>

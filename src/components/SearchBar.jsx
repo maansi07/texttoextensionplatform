@@ -1,3 +1,4 @@
+
 import "./SearchBar.css";
 
 export default function SearchBar({ value, onChange, placeholder }) {
@@ -17,35 +18,4 @@ export default function SearchBar({ value, onChange, placeholder }) {
       />
     </div>
   );
-}
-Create src/components/SearchBar.css:
-css.searchbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 10px 16px;
-  width: 100%;
-  max-width: 320px;
-  transition: border-color 0.2s;
-}
-
-.searchbar:focus-within {
-  border-color: var(--accent-cyan);
-}
-
-.searchbar-input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  width: 100%;
-}
-
-.searchbar-input::placeholder {
-  color: var(--text-muted);
 }

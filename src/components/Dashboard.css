@@ -136,3 +136,27 @@
     display: none;
   }
 }
+
+.dash-search {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.search-input {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  width: 100%;
+  max-width: 320px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--accent-cyan);
+}
+

@@ -11,7 +11,7 @@ export default function Footer() {
           <p className="footer-tagline">Text-to-Extension Developer Platform</p>
         </div>
         <div className="footer-links">
-          {["Docs", "GitHub", "API Reference", "Changelog"].map((link) => (
+          {["Docs", "GitHub", "API Reference", "Templates"].map((link) => (
             <a key={link} href="#" className="footer-link">{link}</a>
           ))}
         </div>

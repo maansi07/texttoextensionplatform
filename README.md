@@ -91,3 +91,26 @@ MIT License — free to use, modify and distribute.
 - Google Gemini AI for extension code generation
 - Zaalima Development for project scope and direction
 - Archiver npm package for zip file creation
+## Team
+| Name | Role | GitHub |
+|------|------|--------|
+| Maansi | Lead — Backend + Frontend | @maansi07 |
+| Vaibhavi | UI Developer — Components + Styling | collaborator |
+| Priyanshu | Documentation + Configuration | collaborator |
+| Uday | QA + Fixes + Cleanup | collaborator |
+
+## FAQ
+
+*Is Extensio.ai free to use?*
+Yes, the platform is free during development. AI generation
+uses the Gemini free tier.
+
+*Which browsers are supported?*
+Chrome (MV3), Firefox (MV2), and Microsoft Edge (MV3).
+
+*Can I install the generated extension directly?*
+Yes. Download the .zip, extract it, and load it in Chrome
+via chrome://extensions → Developer Mode → Load Unpacked.
+
+*Do I need coding knowledge?*
+No. Just describe what you want in plain English.

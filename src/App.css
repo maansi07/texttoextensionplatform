@@ -23,10 +23,12 @@
   --radius-lg: 20px;
   --font-display: 'Syne', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --accent-amber: #f59e0b;
   --accent-rose: #f43f5e;
   --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
   --transition-base: all 0.2s ease;
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-error: #ef4444;
 
 }
 

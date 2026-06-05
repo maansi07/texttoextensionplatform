@@ -114,3 +114,11 @@ via chrome://extensions → Developer Mode → Load Unpacked.
 
 *Do I need coding knowledge?*
 No. Just describe what you want in plain English.
+
+## Performance Notes
+- AI generation typically takes 3-8 seconds depending
+  on prompt complexity and Gemini API response time
+- Generated .zip files are automatically cleaned up
+  after download to save server storage
+- The in-memory store resets on server restart —
+  a database integration is planned for v2.0

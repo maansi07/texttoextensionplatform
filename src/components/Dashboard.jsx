@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [extensions, setExtensions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [browserFilter, setBrowserFilter] = useState("All");
 
   useEffect(() => {
     fetch('/api/extensions')
@@ -33,10 +34,14 @@ export default function Dashboard() {
     setExtensions(prev => prev.filter(ext => ext.id !== id));
   };
 
-  const filtered = extensions.filter(ext =>
-    ext.name?.toLowerCase().includes(search.toLowerCase()) ||
-    ext.description?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = extensions.filter(ext => {
+    const matchSearch =
+      ext.name?.toLowerCase().includes(search.toLowerCase()) ||
+      ext.description?.toLowerCase().includes(search.toLowerCase());
+    const matchBrowser =
+      browserFilter === "All" || ext.browser === browserFilter;
+    return matchSearch && matchBrowser;
+  });
 
   return (
     <section className="dashboard">
@@ -69,6 +74,18 @@ export default function Dashboard() {
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
+        </div>
+
+        <div className="filter-row">
+          {["All", "Chrome", "Firefox", "Edge"].map(b => (
+            <button
+              key={b}
+              className={`filter-btn ${browserFilter === b ? "active" : ""}`}
+              onClick={() => setBrowserFilter(b)}
+            >
+              {b}
+            </button>
+          ))}
         </div>
 
         <div className="ext-table">

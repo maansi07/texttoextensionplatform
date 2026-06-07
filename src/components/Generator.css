@@ -265,3 +265,18 @@
   .gen-layout { grid-template-columns: 1fr; }
   .input-row { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 768px) {
+  .gen-layout {
+    grid-template-columns: 1fr;
+  }
+  .gen-title {
+    font-size: 1.8rem;
+  }
+  .input-row {
+    grid-template-columns: 1fr;
+  }
+  .hero-stats {
+    gap: 20px;
+  }
+}

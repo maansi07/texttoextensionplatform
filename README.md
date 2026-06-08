@@ -1,3 +1,15 @@
+# Extensio.ai — No-Code Extension Factory
+
+![Node.js](https://img.shields.io/badge/Node.js-18+-green)
+![React](https://img.shields.io/badge/React-18-blue)
+![Gemini](https://img.shields.io/badge/AI-Gemini%202.0-orange)
+![License](https://img.shields.io/badge/License-MIT-purple)
+
+> Generate production-ready browser extensions from plain English
+> descriptions using Gemini AI. Download as .zip and install instantly.
+
+Built for Zaalima Development — Q4 AI Engineering Roadmap.
+
 ## Contributing
 This project follows a feature branch workflow.
 - All changes are made on `feat/extensio-ai-rebuild` branch
@@ -122,3 +134,11 @@ No. Just describe what you want in plain English.
   after download to save server storage
 - The in-memory store resets on server restart —
   a database integration is planned for v2.0
+
+## Weekly Progress Log
+| Week | Focus | Status |
+|------|-------|--------|
+| Week 1 | Backend setup, AI service, zip service | ✅ Complete |
+| Week 2 | Routes, controller, frontend connection | ✅ Complete |
+| Week 3 | Dashboard, search, filter, UI polish | ✅ Complete |
+| Week 4 | Error handling, final polish, deployment | 🔄 In Progress |

@@ -1,3 +1,15 @@
+# Extensio.ai — No-Code Extension Factory
+
+![Node.js](https://img.shields.io/badge/Node.js-18+-green)
+![React](https://img.shields.io/badge/React-18-blue)
+![Gemini](https://img.shields.io/badge/AI-Gemini%202.0-orange)
+![License](https://img.shields.io/badge/License-MIT-purple)
+
+> Generate production-ready browser extensions from plain English
+> descriptions using Gemini AI. Download as .zip and install instantly.
+
+Built for Zaalima Development — Q4 AI Engineering Roadmap.
+
 ## Contributing
 This project follows a feature branch workflow.
 - All changes are made on `feat/extensio-ai-rebuild` branch

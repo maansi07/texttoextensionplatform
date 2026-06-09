@@ -142,3 +142,12 @@ No. Just describe what you want in plain English.
 | Week 2 | Routes, controller, frontend connection | ✅ Complete |
 | Week 3 | Dashboard, search, filter, UI polish | ✅ Complete |
 | Week 4 | Error handling, final polish, deployment | 🔄 In Progress |
+
+## Known Issues
+
+- Generated extensions are stored in memory only —
+  they will be lost if the backend server restarts
+- Very complex prompts may occasionally produce
+  invalid JSON — the retry logic handles most cases
+- Firefox MV2 support is functional but not fully
+  tested across all extension types

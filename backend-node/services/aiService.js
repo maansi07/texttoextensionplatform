@@ -1,3 +1,7 @@
+// Extensio.ai — AI Service
+// Uses Gemini 2.0 Flash to generate browser extension code
+// Returns structured JSON with all required extension files
+
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 require('dotenv').config();

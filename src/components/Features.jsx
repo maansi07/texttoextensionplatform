@@ -4,19 +4,19 @@ const FEATURES = [
   {
     icon: "⚡",
     title: "AI-Powered Generation",
-    desc: "Describe your extension in plain English. Our AI understands intent and generates complete, working code.",
+    desc: "Describe your extension in plain English. Gemini 2.0 Flash understands intent and generates complete, working code instantly.",
     tag: "Core",
   },
   {
     icon: "🌐",
     title: "Multi-Browser Support",
-    desc: "Generate extensions compatible with Chrome MV3, Firefox WebExtensions, and Microsoft Edge.",
+    desc: "Generate extensions for Chrome MV3, Firefox WebExtensions, and Microsoft Edge — all from a single prompt.",
     tag: "Compatibility",
   },
   {
-    icon: "📁",
-    title: "Complete Package",
-    desc: "Get manifest.json, background scripts, content scripts, popup UI, and icons — all in one download.",
+    icon: "📦",
+    title: "Instant .zip Download",
+    desc: "Get a ready-to-install .zip package containing manifest, scripts, and popup UI — load it directly in your browser.",
     tag: "Output",
   },
   {
@@ -26,16 +26,16 @@ const FEATURES = [
     tag: "Security",
   },
   {
-    icon: "☕",
-    title: "Java Backend API",
-    desc: "Spring Boot REST API powering the generation engine — scalable, documented, and developer-friendly.",
+    icon: "🚀",
+    title: "Node.js Backend",
+    desc: "Express REST API with Gemini AI integration, archiver zip packaging, and in-memory extension store.",
     tag: "Backend",
   },
   {
-    icon: "🚀",
-    title: "One-Click Deploy",
-    desc: "Export a production-ready .zip ready to upload directly to the Chrome Web Store or Firefox Add-ons.",
-    tag: "Deploy",
+    icon: "🎨",
+    title: "No Code Required",
+    desc: "Built for everyone — developers and non-technical users alike. If you can describe it, Extensio.ai can build it.",
+    tag: "Accessibility",
   },
 ];
 

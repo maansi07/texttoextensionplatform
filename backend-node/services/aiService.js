@@ -1,3 +1,7 @@
+// Extensio.ai — AI Service
+// Uses Gemini 2.0 Flash to generate browser extension code
+// Returns structured JSON with all required extension files
+
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 require('dotenv').config();
@@ -29,23 +33,31 @@ Rules:
 - background.js must use chrome.runtime.onInstalled
 - Do not include any explanation outside the JSON`;
 
-async function generateExtension(prompt, browser = 'Chrome') {
+async function generateExtension(prompt, browser = 'Chrome', retries = 2) {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash',
+    });
+
     const fullPrompt = `${SYSTEM_PROMPT}\n\nUser requirement: ${prompt}\nTarget browser: ${browser}`;
+
     const result = await model.generateContent(fullPrompt);
     const text = result.response.text();
 
-    // Clean any accidental markdown formatting
     const cleaned = text
       .replace(/```json/g, '')
       .replace(/```/g, '')
       .trim();
 
     const parsed = JSON.parse(cleaned);
-    return parsed;
 
+    return parsed;
   } catch (error) {
+    if (retries > 0) {
+      console.log(`Retrying... attempts left: ${retries}`);
+      return generateExtension(prompt, browser, retries - 1);
+    }
+
     console.error('AI generation error:', error.message);
     throw new Error('AI generation failed: ' + error.message);
   }

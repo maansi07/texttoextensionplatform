@@ -1,4 +1,7 @@
-const archiver = require('archiver');
+// Extensio.ai — Zip Service
+// Creates a .zip archive from generated extension files
+// Uses archiver npm package for reliable zip creationconst archiver = require('archiver');
+
 const fs = require('fs');
 const path = require('path');
 

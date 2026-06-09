@@ -147,3 +147,26 @@
   color: var(--accent-cyan);
 }
 .stat-label { font-size: 0.75rem; color: var(--text-muted); }
+
+@media (max-width: 768px) {
+  .hero-inner {
+    padding: 40px 20px;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-terminal {
+    display: none;
+  }
+  .hero-stats {
+    gap: 16px;
+  }
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

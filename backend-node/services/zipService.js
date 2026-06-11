@@ -1,12 +1,16 @@
 // Extensio.ai — Zip Service
 // Creates a .zip archive from generated extension files
-// Uses archiver npm package for reliable zip creationconst archiver = require('archiver');
+// Uses archiver npm package for reliable zip creation
 
+const archiver = require('archiver');
 const fs = require('fs');
 const path = require('path');
 
 async function createExtensionZip(files, extensionName) {
-  const safeName = extensionName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+  const safeName = extensionName
+    .replace(/\s+/g, '-')
+    .replace(/[^a-zA-Z0-9-]/g, '');
+
   const tmpDir = path.join(__dirname, '../tmp', safeName);
 
   if (!fs.existsSync(tmpDir)) {
@@ -14,7 +18,11 @@ async function createExtensionZip(files, extensionName) {
   }
 
   for (const [filename, content] of Object.entries(files)) {
-    fs.writeFileSync(path.join(tmpDir, filename), content);
+    // Sanitize filename — only allow safe characters
+    const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '');
+    if (safeFilename && content) {
+      fs.writeFileSync(path.join(tmpDir, safeFilename), content);
+    }
   }
 
   const zipPath = `${tmpDir}.zip`;

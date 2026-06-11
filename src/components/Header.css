@@ -104,3 +104,18 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
+
+@media (max-width: 768px) {
+  .header-inner {
+    padding: 0 16px;
+  }
+  .nav {
+    display: none;
+  }
+  .status-badge {
+    display: none;
+  }
+  .logo-text {
+    font-size: 1rem;
+  }
+}

@@ -241,3 +241,21 @@ on the `/api/extensions/generate` endpoint using the
 ```bash
 npm install express-rate-limit
 ```
+
+---
+
+## Project Summary
+
+Extensio.ai is a complete AI-First SaaS platform built as part
+of the Zaalima Development Q4 Engineering Roadmap. It demonstrates:
+
+- Full-stack development with React 18 and Node.js
+- Real AI integration using Google Gemini 2.0 Flash
+- File system operations and zip packaging with Archiver
+- RESTful API design with Express
+- Professional Git workflow with feature branches
+- Team collaboration with structured daily commits across 4 members
+
+**Repository:** github.com/maansi07/texttoextensionplatform
+**Branch:** feat/extensio-ai-rebuild
+**Status:** Active Development — Week 4 in progress

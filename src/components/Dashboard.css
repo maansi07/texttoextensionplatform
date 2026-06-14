@@ -189,4 +189,34 @@
   color: var(--accent-cyan);
 }
 
+@media (max-width: 768px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
 
+  .table-header span:nth-child(3),
+  .table-header span:nth-child(4),
+  .table-row .cell:nth-child(3),
+  .table-row .cell:nth-child(4) {
+    display: none;
+  }
+
+  .dash-stats-row {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .dash-stat-val {
+    font-size: 1.4rem;
+  }
+
+  .dash-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-input {
+    max-width: 100%;
+  }
+}

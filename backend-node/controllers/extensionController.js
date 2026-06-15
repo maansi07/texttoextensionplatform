@@ -27,9 +27,9 @@ async function generate(req, res) {
 
     store.set(extension.id, extension);
 
-    console.log(
-      `[${new Date().toISOString()}] Generated: ${extension.name} | Browser: ${extension.browser}`
-    );
+    // Log generation with timestamp
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ✓ Generated: "${extension.name}" for ${extension.browser}`);
 
     res.status(201).json(extension);
   } catch (error) {

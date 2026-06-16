@@ -36,7 +36,7 @@ Rules:
 async function generateExtension(prompt, browser = 'Chrome', retries = 2) {
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-flash-latest',
     });
 
     const fullPrompt = `${SYSTEM_PROMPT}\n\nUser requirement: ${prompt}\nTarget browser: ${browser}`;
@@ -44,12 +44,26 @@ async function generateExtension(prompt, browser = 'Chrome', retries = 2) {
     const result = await model.generateContent(fullPrompt);
     const text = result.response.text();
 
-    const cleaned = text
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
-      .trim();
+    // Robust JSON extraction by finding the outermost curly braces
+    let cleaned = text.trim();
+    const startIdx = cleaned.indexOf('{');
+    const endIdx = cleaned.lastIndexOf('}');
+    
+    if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) {
+      throw new Error('No valid JSON object found in response');
+    }
+    
+    cleaned = cleaned.substring(startIdx, endIdx + 1);
 
     const parsed = JSON.parse(cleaned);
+
+    // Validate structure
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error('Parsed AI response is not an object');
+    }
+    if (!parsed.name || !parsed.files || typeof parsed.files !== 'object') {
+      throw new Error('AI response is missing "name" or "files" object');
+    }
 
     return parsed;
   } catch (error) {

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      width: 320px;
+      padding: 15px;
+      margin: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      text-align: center;
+      font-size: 18px;
+    }
+    .input-container {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      padding-right: 40px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .toggle-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #888;
+    }
+    .meter-container {
+      background-color: #e0e0e0;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .meter-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+    .strength-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+    .strength-text {
+      font-weight: bold;
+    }
+    .criteria {
+      font-size: 12px;
+      list-style-type: none;
+      padding: 0;
+      margin: 0 0 15px 0;
+    }
+    .criteria li {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      color: #e74c3c;
+    }
+    .criteria li.valid {
+      color: #2ecc71;
+    }
+    .criteria li::before {
+      content: "✗ ";
+      margin-right: 8px;
+      font-weight: bold;
+    }
+    .criteria li.valid::before {
+      content: "✓ ";
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      text-align: center;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .btn:hover {
+      background-color: #2980b9;
+    }
+    .btn-secondary {
+      background-color: #2ecc71;
+    }
+    .btn-secondary:hover {
+      background-color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+  <h3>Password Strength Checker</h3>
+  <div class="input-container">
+    <input type="password" id="password-input" placeholder="Type or generate a password...">
+    <button class="toggle-btn" id="toggle-visibility" title="Show/Hide Password">👁️</button>
+  </div>
+  
+  <div class="meter-container">
+    <div id="meter" class="meter-bar"></div>
+  </div>
+  <div class="strength-row">
+    <span>Strength Rating:</span>
+    <span id="strength-label" class="strength-text" style="color: #888;">Empty</span>
+  </div>
+
+  <ul class="criteria">
+    <li id="c-length">At least 8 characters</li>
+    <li id="c-upper">At least one uppercase letter</li>
+    <li id="c-lower">At least one lowercase letter</li>
+    <li id="c-number">At least one digit</li>
+    <li id="c-special">At least one special character</li>
+  </ul>
+
+  <button class="btn" id="generate-btn">Generate Strong Password</button>
+  <button class="btn btn-secondary" id="fill-btn">Fill Into Webpage</button>
+
+  <script src="popup.js"></script>
+</body>
+</html>

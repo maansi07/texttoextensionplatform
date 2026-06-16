@@ -37,6 +37,29 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+// Global error handling middleware (handles JSON parsing body errors, etc.)
+app.use((err, req, res, next) => {
+  console.error(`[${new Date().toISOString()}] Unhandled error:`, err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(err.status || 500).json({
+    error: 'Internal Server Error',
+    message: err.message || 'An unexpected error occurred'
+  });
+});
+
+const server = app.listen(PORT, () => {
   console.log(`Extensio.ai server running on port ${PORT}`);
+});
+
+// Handle server startup errors (e.g. EADDRINUSE)
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n[FATAL ERROR] Port ${PORT} is already in use.`);
+    console.error(`Please close any application using port ${PORT} or run with a different PORT environment variable (e.g. PORT=8081).\n`);
+  } else {
+    console.error('Server error:', err);
+  }
+  process.exit(1);
 });

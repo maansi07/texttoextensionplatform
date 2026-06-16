@@ -34,14 +34,17 @@ export default function Generator({ prompt, setPrompt }) {
         body: JSON.stringify({ prompt, browser, category }),
       });
 
-      if (!response.ok) throw new Error('Generation failed');
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.details || errData.error || 'Generation failed');
+      }
 
       const data = await response.json();
       setGenerated(data.files);
       setGeneratedId(data.id);
       setActiveFile(Object.keys(data.files)[0]);
     } catch (err) {
-      alert('Generation failed. Is the backend running?');
+      alert(`Generation failed: ${err.message}`);
       console.error(err);
     } finally {
       setIsGenerating(false);

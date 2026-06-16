@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "SecurePass Strength Meter",
+  "version": "1.0",
+  "description": "Evaluate password strength in real-time with a visual meter and interactive filling helper.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

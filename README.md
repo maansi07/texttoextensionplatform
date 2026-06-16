@@ -24,14 +24,14 @@ then packages them into a downloadable .zip file.
 
 ## Tech Stack
 
-|    Layer       |    Technology         |       Purpose             |
-|----------------|-----------------------|---------------------------|
-| Frontend       | React 18 + Vite       | Component UI&dev server   |
-| Styling        | CSS3 custom properties| Theming and layout        |
-| Backend        | Node.js + Express     | REST API server           |
-| AI             | Gemini 2.0 Flash      | Extension code generation |
-| Packaging      | Archiver npm          | .zip file creation        |
-| Version Control| Git + GitHub          | Source control            |
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Frontend | React 18 + Vite | Component UI and dev server |
+| Styling | CSS3 custom properties | Theming and layout |
+| Backend | Node.js + Express | REST API server |
+| AI | Gemini 2.0 Flash | Extension code generation |
+| Packaging | Archiver npm | .zip file creation |
+| Version Control | Git + GitHub | Source control |
 
 ---
 

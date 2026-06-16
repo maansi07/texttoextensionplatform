@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [extensions, setExtensions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  // Browser filter state — filters table rows by selected browser
   const [browserFilter, setBrowserFilter] = useState("All");
 
   useEffect(() => {

@@ -8,7 +8,7 @@
 > Generate production-ready browser extensions from plain English
 > descriptions using Gemini AI. Download as .zip and install instantly.
 
-**Built for Zaalima Development — Q4 AI Engineering Roadmap.**
+**Built for Zaalima Development Pvt Ltd — Q4 AI Engineering Roadmap .**
 
 ---
 

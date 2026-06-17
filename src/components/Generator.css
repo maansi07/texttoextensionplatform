@@ -280,3 +280,18 @@
     gap: 20px;
   }
 }
+/* Button hover polish */
+.gen-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 229, 255, 0.25);
+}
+
+.copy-btn:hover {
+  color: var(--accent-green) !important;
+  border-color: var(--accent-green) !important;
+}
+
+.btn-group-item:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}

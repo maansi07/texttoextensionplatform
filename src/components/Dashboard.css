@@ -220,3 +220,31 @@
     max-width: 100%;
   }
 }
+
+.skeleton-wrapper { padding: 8px 0; }
+
+.skeleton-row {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.skeleton-box {
+  height: 16px;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card-hover) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+  flex: 1;
+}
+
+.skeleton-box.wide { flex: 2; }
+.skeleton-box.narrow { flex: 0.5; }
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+

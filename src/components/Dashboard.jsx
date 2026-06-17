@@ -100,10 +100,15 @@ export default function Dashboard() {
           </div>
 
           {loading && (
-            <div className="table-row">
-              <p style={{ color: "var(--text-muted)", padding: "20px" }}>
-                Loading...
-              </p>
+            <div className="skeleton-wrapper">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="skeleton-row">
+                  <div className="skeleton-box wide"></div>
+                  <div className="skeleton-box"></div>
+                  <div className="skeleton-box"></div>
+                  <div className="skeleton-box narrow"></div>
+                </div>
+              ))}
             </div>
           )}
 
@@ -137,7 +142,7 @@ export default function Dashboard() {
               </div>
               <div className="cell">
                 <span
-                  className={`tag ${STATUS_COLORS[ext.status] || "tag-cyan"}`}
+                    className={`tag ${STATUS_COLORS[ext.status] || "tag-cyan"}`}
                   style={{ fontSize: "0.7rem" }}
                 >
                   {ext.status}
@@ -147,7 +152,7 @@ export default function Dashboard() {
                 <button
                   className="action-btn"
                   onClick={() =>
-                    window.open(`/api/extensions/${ext.id}/download`)
+                      window.open(`/api/extensions/${ext.id}/download`)
                   }
                 >
                   ↓ Download
@@ -156,7 +161,7 @@ export default function Dashboard() {
                   className="action-btn action-btn-dl"
                   onClick={() => handleDelete(ext.id)}
                 >
-                  🗑
+                  🗑️
                 </button>
               </div>
             </div>

@@ -43,25 +43,23 @@ async function generate(req, res) {
 
 async function downloadZip(req, res) {
   const extension = store.get(req.params.id);
-
   if (!extension) {
-    return res.status(404).json({ error: 'Not found' });
+    return res.status(404).json({ error: 'Extension not found' });
+  }
+
+  if (!extension.files || Object.keys(extension.files).length === 0) {
+    return res.status(400).json({ error: 'Extension has no files to download' });
   }
 
   try {
-    const zipPath = await createExtensionZip(
-      extension.files,
-      extension.name
-    );
-
+    const zipPath = await createExtensionZip(extension.files, extension.name);
     res.download(zipPath, `${extension.name}.zip`, (err) => {
       cleanupZip(zipPath);
+      if (err) console.error('Download error:', err.message);
     });
   } catch (error) {
-    res.status(500).json({
-      error: 'Zip failed',
-      details: error.message,
-    });
+    console.error('Zip error:', error.message);
+    res.status(500).json({ error: 'Failed to create zip', details: error.message });
   }
 }
 

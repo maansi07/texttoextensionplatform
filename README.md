@@ -50,6 +50,29 @@ Base URL: `http://localhost:8080/api`
 
 ---
 
+## API Quick Reference
+
+### Generate an Extension
+```bash
+# POST request to generate a Chrome extension
+curl -X POST http://localhost:8080/api/extensions/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "dark mode toggle for any website",
+    "browser": "Chrome",
+    "category": "Accessibility"
+  }'
+```
+
+### Download as ZIP
+```bash
+# Replace {id} with the ID returned from generate
+curl http://localhost:8080/api/extensions/{id}/download \
+  --output my-extension.zip
+```
+
+---
+
 ## Project Structure
 texttoextensionplatform/
 ├── index.html

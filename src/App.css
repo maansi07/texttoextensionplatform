@@ -21,8 +21,8 @@
   --glow-purple: 0 0 30px rgba(124, 58, 237, 0.15);
   --radius: 12px;
   --radius-lg: 20px;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Syne', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --accent-rose: #f43f5e;
   --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
   --transition-base: all 0.2s ease;

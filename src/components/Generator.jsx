@@ -21,6 +21,8 @@ export default function Generator({ prompt, setPrompt }) {
   const [activeFile, setActiveFile] = useState("manifest.json");
   const [copied, setCopied] = useState(false);
   const [generatedId, setGeneratedId] = useState(null);
+  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [downloadError, setDownloadError] = useState(null);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
@@ -220,8 +222,33 @@ export default function Generator({ prompt, setPrompt }) {
   <button
     className="btn btn-primary"
     style={{ width: "100%" }}
-    onClick={() => window.open(`/api/extensions/${generatedId}/download`)}
-    disabled={!generatedId}
+    onClick={async () => {
+      if (!generatedId) return;
+      setDownloadLoading(true);
+      setDownloadError(null);
+      try {
+        const resp = await fetch(`/api/extensions/${generatedId}/download`);
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          throw new Error(err.details || err.error || 'Download failed');
+        }
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${generatedId}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error(err);
+        setDownloadError(err.message);
+      } finally {
+        setDownloadLoading(false);
+      }
+    }}
+    disabled={!generatedId || downloadLoading}
   >
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="2">
@@ -230,6 +257,8 @@ export default function Generator({ prompt, setPrompt }) {
     </svg>
     Download Extension Package (.zip)
   </button>
+  {downloadLoading && <div style={{marginTop:8}}>Preparing download…</div>}
+  {downloadError && <div style={{marginTop:8,color:'var(--danger)'}}>Download error: {downloadError}</div>}
 </div>
               </div>
             )}

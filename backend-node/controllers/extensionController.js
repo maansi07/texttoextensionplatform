@@ -53,12 +53,32 @@ async function downloadZip(req, res) {
 
   try {
     const zipPath = await createExtensionZip(extension.files, extension.name);
-    res.download(zipPath, `${extension.name}.zip`, (err) => {
-      cleanupZip(zipPath);
-      if (err) console.error('Download error:', err.message);
+
+    // Stream the zip to the client with proper headers
+    const stat = require('fs').statSync(zipPath);
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${extension.name}.zip"`);
+    res.setHeader('Content-Length', stat.size);
+
+    const stream = require('fs').createReadStream(zipPath);
+
+    stream.on('error', (streamErr) => {
+      console.error('Stream error:', streamErr.message);
+      try { cleanupZip(zipPath); } catch (e) {}
+      if (!res.headersSent) res.status(500).json({ error: 'Failed to stream zip', details: streamErr.message });
     });
+
+    // After response finishes, remove the zip
+    res.on('finish', () => {
+      try { cleanupZip(zipPath); } catch (e) { console.warn('cleanup failed', e.message); }
+    });
+
+    stream.pipe(res);
   } catch (error) {
     console.error('Zip error:', error.message);
+    if (error && error.statusCode === 422) {
+      return res.status(422).json({ error: 'Invalid generated manifest', details: error.message });
+    }
     res.status(500).json({ error: 'Failed to create zip', details: error.message });
   }
 }

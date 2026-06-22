@@ -1,63 +1,57 @@
-const { generateExtension } = require('../services/aiService');
+const { generateExtensionStream } = require('../services/aiService');
 const { createExtensionZip, cleanupZip } = require('../services/zipService');
 const { v4: uuidv4 } = require('uuid');
 
 const store = new Map();
 
-async function generate(req, res) {
+async function generateStream(req, res) {
   const { prompt, browser, category } = req.body;
 
   if (!prompt || prompt.trim() === '') {
     return res.status(400).json({ error: 'Prompt is required' });
   }
 
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.flushHeaders();
+
   try {
-    const aiResult = await generateExtension(prompt, browser);
+    const result = await generateExtensionStream(prompt, browser);
 
-    const extension = {
-      id: uuidv4(),
-      name: aiResult.name,
-      description: aiResult.description,
-      browser: browser || 'Chrome',
-      category: category || 'General',
-      status: 'Generated',
-      files: aiResult.files,
-      createdAt: new Date().toISOString(),
-    };
+    for await (const chunk of result.stream) {
+      const text = chunk.text();
+      if (text) {
+        res.write(`data: ${JSON.stringify({ type: 'chunk', text })}\n\n`);
+      }
+    }
 
-    store.set(extension.id, extension);
-
-    // Log generation with timestamp
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ✓ Generated: "${extension.name}" for ${extension.browser}`);
-
-    res.status(201).json(extension);
+    res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
+    res.end();
   } catch (error) {
-    console.error('Generation error:', error.message);
-    res.status(500).json({
-      error: 'Failed to generate',
-      details: error.message,
-    });
+    console.error('Streaming error:', error.message);
+    res.write(`data: ${JSON.stringify({ type: 'error', message: error.message })}\n\n`);
+    res.end();
   }
 }
 
-async function downloadZip(req, res) {
-  const extension = store.get(req.params.id);
-  if (!extension) {
-    return res.status(404).json({ error: 'Extension not found' });
+async function generateZip(req, res) {
+  const { files, name } = req.body;
+
+  if (!files || Object.keys(files).length === 0) {
+    return res.status(400).json({ error: 'Files are required to generate zip' });
   }
 
-  if (!extension.files || Object.keys(extension.files).length === 0) {
-    return res.status(400).json({ error: 'Extension has no files to download' });
-  }
+  const extName = name || 'GeneratedExtension';
 
   try {
-    const zipPath = await createExtensionZip(extension.files, extension.name);
+    const zipPath = await createExtensionZip(files, extName);
 
     // Stream the zip to the client with proper headers
     const stat = require('fs').statSync(zipPath);
     res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', `attachment; filename="${extension.name}.zip"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${extName}.zip"`);
     res.setHeader('Content-Length', stat.size);
 
     const stream = require('fs').createReadStream(zipPath);
@@ -76,9 +70,6 @@ async function downloadZip(req, res) {
     stream.pipe(res);
   } catch (error) {
     console.error('Zip error:', error.message);
-    if (error && error.statusCode === 422) {
-      return res.status(422).json({ error: 'Invalid generated manifest', details: error.message });
-    }
     res.status(500).json({ error: 'Failed to create zip', details: error.message });
   }
 }
@@ -108,8 +99,8 @@ function deleteById(req, res) {
 }
 
 module.exports = {
-  generate,
-  downloadZip,
+  generateStream,
+  generateZip,
   getAll,
   getById,
   deleteById,

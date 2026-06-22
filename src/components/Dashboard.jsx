@@ -1,5 +1,8 @@
 import "./Dashboard.css";
 import { useState, useEffect } from "react";
+import CountUp from './CountUp';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { Layers, Download, Globe, Clock, Sparkles, LayoutTemplate } from 'lucide-react';
 
 const STATUS_COLORS = {
   Published: "tag-green",
@@ -13,11 +16,134 @@ const BROWSER_ICONS = {
   Edge: "🔷",
 };
 
-export default function Dashboard() {
+// --- StatCardsRow ---
+function StatCardsRow({ extensions }) {
+  const totalGen = extensions.length;
+  // Let's assume downloads are not tracked yet, we will mock it or calculate it if possible. 
+  // We'll set it to 0 as instructed for empty, or maybe sum it up if there was a field.
+  const downloads = 0; 
+  const browsersCount = new Set(extensions.map(e => e.browser)).size || 0;
+  
+  let lastGen = "Never";
+  if (extensions.length > 0) {
+    const sorted = [...extensions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const hours = Math.floor((new Date() - new Date(sorted[0].createdAt)) / (1000 * 60 * 60));
+    lastGen = hours < 1 ? "Just now" : `${hours}h ago`;
+  }
+
+  const statCards = [
+    { label: "Total Generated", value: totalGen, icon: Layers },
+    { label: "Downloads", value: downloads, icon: Download },
+    { label: "Browsers", value: browsersCount, icon: Globe },
+    { label: "Last Generated", value: lastGen, icon: Clock, isString: true },
+  ];
+
+  return (
+    <div className="stat-cards-row">
+      {statCards.map((s, idx) => {
+        const Icon = s.icon;
+        return (
+          <div key={idx} className="stat-card">
+            <div className="stat-icon-wrap">
+              <Icon size={18} color="rgba(45, 212, 191, 0.7)" />
+            </div>
+            <div className="stat-content">
+              <div className="stat-value">
+                {s.isString ? s.value : <CountUp end={s.value} duration={0.8} />}
+              </div>
+              <div className="stat-label">{s.label}</div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// --- DashboardEmptyState ---
+function DashboardEmptyState({ setActiveTab, setPrompt }) {
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.4, delay, ease: 'easeOut' }
+  });
+
+  const handleQuickIdea = (idea) => {
+    setPrompt(idea);
+    setActiveTab("generator");
+  };
+
+  return (
+    <motion.div 
+      className="dashboard-empty-state"
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
+    >
+      <motion.div {...fadeUp(0)} className="empty-illustration">
+        <svg width="180" height="140" viewBox="0 0 180 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Browser window */}
+          <rect x="20" y="30" width="140" height="95" rx="8" stroke="rgba(45,212,191,0.4)" strokeWidth="1.5" fill="rgba(45,212,191,0.04)"/>
+          {/* Title bar */}
+          <rect x="20" y="30" width="140" height="22" rx="8" fill="rgba(45,212,191,0.08)"/>
+          <rect x="20" y="44" width="140" height="8" rx="0" fill="rgba(45,212,191,0.08)"/>
+          {/* Traffic lights */}
+          <circle cx="34" cy="41" r="3.5" fill="rgba(255,100,100,0.5)"/>
+          <circle cx="45" cy="41" r="3.5" fill="rgba(255,180,50,0.5)"/>
+          <circle cx="56" cy="41" r="3.5" fill="rgba(45,212,191,0.5)"/>
+          {/* Puzzle piece body */}
+          <rect x="70" y="55" width="40" height="40" rx="6" fill="rgba(124,58,237,0.15)" stroke="rgba(124,58,237,0.5)" strokeWidth="1.5"/>
+          {/* Puzzle connector tab */}
+          <rect x="85" y="48" width="10" height="10" rx="3" fill="rgba(124,58,237,0.2)" stroke="rgba(124,58,237,0.5)" strokeWidth="1.5"/>
+          {/* Lightning bolt inside puzzle */}
+          <path d="M87 63 L83 75 L89 73 L85 87 L97 71 L91 73 Z" fill="rgba(45,212,191,0.8)"/>
+          {/* Sparkles */}
+          <path d="M148 28 L149.5 24 L151 28 L155 29.5 L151 31 L149.5 35 L148 31 L144 29.5 Z" fill="rgba(45,212,191,0.6)"/>
+          <path d="M25 118 L26 115 L27 118 L30 119 L27 120 L26 123 L25 120 L22 119 Z" fill="rgba(124,58,237,0.6)"/>
+          <circle cx="158" cy="65" r="2.5" fill="rgba(45,212,191,0.4)"/>
+          <circle cx="22" cy="75" r="2" fill="rgba(124,58,237,0.4)"/>
+          <circle cx="155" cy="105" r="2" fill="rgba(45,212,191,0.3)"/>
+        </svg>
+      </motion.div>
+
+      <motion.h3 {...fadeUp(0.08)} className="empty-headline">
+        No extensions yet
+      </motion.h3>
+
+      <motion.p {...fadeUp(0.14)} className="empty-subtext">
+        Describe what you want your extension to do and the AI will write the code, package it, and get it ready to install in seconds.
+      </motion.p>
+
+      <motion.div {...fadeUp(0.20)} className="empty-actions">
+        <button className="btn btn-primary" onClick={() => setActiveTab("generator")}>
+          <Sparkles size={16} />
+          Build your first extension
+        </button>
+        <button className="btn empty-btn-secondary" onClick={() => setActiveTab("templates")}>
+          <LayoutTemplate size={16} />
+          Browse templates
+        </button>
+      </motion.div>
+
+      <motion.div {...fadeUp(0.28)} className="empty-quick-ideas">
+        <span className="ideas-label">Popular ideas</span>
+        <div className="ideas-chips">
+          {["Dark mode toggle", "Ad blocker", "Tab manager"].map(idea => (
+            <button key={idea} className="idea-chip" onClick={() => handleQuickIdea(idea)}>
+              {idea}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// --- Main Dashboard ---
+export default function Dashboard({ setActiveTab, setPrompt }) {
   const [extensions, setExtensions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  // Browser filter state — filters table rows by selected browser
   const [browserFilter, setBrowserFilter] = useState("All");
 
   useEffect(() => {
@@ -44,6 +170,8 @@ export default function Dashboard() {
     return matchSearch && matchBrowser;
   });
 
+  const hasExtensions = extensions && extensions.length > 0;
+
   return (
     <section className="dashboard">
       <div className="dashboard-inner">
@@ -53,53 +181,40 @@ export default function Dashboard() {
             <h2 className="dash-title">Generated Extensions</h2>
             <p className="dash-desc">All extensions built with Extensio.ai</p>
           </div>
-          <div className="dash-stats-row">
-            {[
-              { label: "Total Generated", value: extensions.length || "0" },
-              { label: "Browsers", value: "3" },
-              { label: "Status", value: "Live" },
-            ].map((s) => (
-              <div key={s.label} className="dash-stat">
-                <span className="dash-stat-val">{s.value}</span>
-                <span className="dash-stat-label">{s.label}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
-        <div className="dash-search">
-          <input
-            className="search-input"
-            type="text"
-            placeholder="Search extensions..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
+        {/* Stat cards — ALWAYS rendered */}
+        <StatCardsRow extensions={extensions} />
 
-        <div className="filter-row">
-          {["All", "Chrome", "Firefox", "Edge"].map(b => (
-            <button
-              key={b}
-              className={`filter-btn ${browserFilter === b ? "active" : ""}`}
-              onClick={() => setBrowserFilter(b)}
-            >
-              {b}
-            </button>
-          ))}
-        </div>
+        {/* Search + filter — only if extensions exist */}
+        {!loading && hasExtensions && (
+          <>
+            <div className="dash-search">
+              <input
+                className="search-input"
+                type="text"
+                placeholder="Search extensions..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
 
-        <div className="ext-table">
-          <div className="table-header">
-            <span>Extension</span>
-            <span>Browser</span>
-            <span>Category</span>
-            <span>Created</span>
-            <span>Status</span>
-            <span>Actions</span>
-          </div>
+            <div className="filter-row">
+              {["All", "Chrome", "Firefox", "Edge"].map(b => (
+                <button
+                  key={b}
+                  className={`filter-btn ${browserFilter === b ? "active" : ""}`}
+                  onClick={() => setBrowserFilter(b)}
+                >
+                  {b}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
-          {loading && (
+        <div className="ext-table-container">
+          {loading ? (
             <div className="skeleton-wrapper">
               {[1, 2, 3].map(i => (
                 <div key={i} className="skeleton-row">
@@ -110,62 +225,66 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-          )}
-
-          {!loading && extensions.length === 0 && (
-            <div className="table-row">
-              <p style={{ color: "var(--text-muted)", padding: "20px" }}>
-                No extensions generated yet. Go to Generator to create one!
-              </p>
-            </div>
-          )}
-
-          {filtered.map((ext) => (
-            <div key={ext.id} className="table-row">
-              <div className="ext-name-cell">
-                <div className="ext-icon">{ext.name ? ext.name[0] : "E"}</div>
-                <div>
-                  <div className="ext-name">{ext.name}</div>
-                  <div className="ext-desc">{ext.description}</div>
+          ) : hasExtensions ? (
+            <div className="ext-table">
+              <div className="table-header">
+                <span>Extension</span>
+                <span>Browser</span>
+                <span>Category</span>
+                <span>Created</span>
+                <span>Status</span>
+                <span>Actions</span>
+              </div>
+              {filtered.map((ext) => (
+                <div key={ext.id} className="table-row">
+                  <div className="ext-name-cell">
+                    <div className="ext-icon">{ext.name ? ext.name[0] : "E"}</div>
+                    <div>
+                      <div className="ext-name">{ext.name}</div>
+                      <div className="ext-desc">{ext.description}</div>
+                    </div>
+                  </div>
+                  <div className="cell">
+                    <span>{BROWSER_ICONS[ext.browser]} {ext.browser}</span>
+                  </div>
+                  <div className="cell">
+                    <span className="tag tag-purple" style={{ fontSize: "0.7rem" }}>
+                      {ext.category}
+                    </span>
+                  </div>
+                  <div className="cell date-cell">
+                    {new Date(ext.createdAt).toLocaleDateString()}
+                  </div>
+                  <div className="cell">
+                    <span
+                        className={`tag ${STATUS_COLORS[ext.status] || "tag-cyan"}`}
+                      style={{ fontSize: "0.7rem" }}
+                    >
+                      {ext.status}
+                    </span>
+                  </div>
+                  <div className="cell actions-cell">
+                    <button
+                      className="action-btn"
+                      onClick={() =>
+                          window.open(`/api/extensions/${ext.id}/download`)
+                      }
+                    >
+                      ↓ Download
+                    </button>
+                    <button
+                      className="action-btn action-btn-dl"
+                      onClick={() => handleDelete(ext.id)}
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="cell">
-                <span>{BROWSER_ICONS[ext.browser]} {ext.browser}</span>
-              </div>
-              <div className="cell">
-                <span className="tag tag-purple" style={{ fontSize: "0.7rem" }}>
-                  {ext.category}
-                </span>
-              </div>
-              <div className="cell date-cell">
-                {new Date(ext.createdAt).toLocaleDateString()}
-              </div>
-              <div className="cell">
-                <span
-                    className={`tag ${STATUS_COLORS[ext.status] || "tag-cyan"}`}
-                  style={{ fontSize: "0.7rem" }}
-                >
-                  {ext.status}
-                </span>
-              </div>
-              <div className="cell actions-cell">
-                <button
-                  className="action-btn"
-                  onClick={() =>
-                      window.open(`/api/extensions/${ext.id}/download`)
-                  }
-                >
-                  ↓ Download
-                </button>
-                <button
-                  className="action-btn action-btn-dl"
-                  onClick={() => handleDelete(ext.id)}
-                >
-                  🗑️
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
+          ) : (
+            <DashboardEmptyState setActiveTab={setActiveTab} setPrompt={setPrompt} />
+          )}
         </div>
       </div>
     </section>

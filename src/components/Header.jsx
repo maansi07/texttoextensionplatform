@@ -1,12 +1,16 @@
 import "./Header.css";
+import { motion, useReducedMotion } from 'framer-motion';
+import { Home, Wand2, LayoutTemplate, LayoutDashboard } from 'lucide-react';
 
 export default function Header({ activeTab, setActiveTab }) {
   const navLinks = [
-    { id: "home", label: "Home" },
-    { id: "generator", label: "Generator" },
-    { id: "templates", label: "Templates" },
-    { id: "dashboard", label: "Dashboard" },
+    { id: "home", label: "Home", icon: Home },
+    { id: "generator", label: "Generator", icon: Wand2 },
+    { id: "templates", label: "Templates", icon: LayoutTemplate },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   ];
+
+  const reduce = useReducedMotion();
 
   return (
     <header className="header">
@@ -31,16 +35,32 @@ export default function Header({ activeTab, setActiveTab }) {
           </span>
         </div>
 
-        <nav className="nav">
-          {navLinks.map((link) => (
-            <button
-              key={link.id}
-              className={`nav-link ${activeTab === link.id ? "active" : ""}`}
-              onClick={() => setActiveTab(link.id)}
-            >
-              {link.label}
-            </button>
-          ))}
+        <nav className="nav-tabs">
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+            return (
+              <button
+                key={link.id}
+                className={`nav-tab ${activeTab === link.id ? "active" : ""}`}
+                onClick={() => setActiveTab(link.id)}
+              >
+                {!reduce && activeTab === link.id && (
+                  <motion.div
+                    layoutId="nav-pill"
+                    className="nav-pill-bg"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+                {reduce && activeTab === link.id && (
+                  <div className="nav-pill-bg" />
+                )}
+                <span className="nav-tab-label">
+                  <Icon size={16} />
+                  {link.label}
+                </span>
+              </button>
+            );
+          })}
         </nav>
 
         <div className="header-actions">

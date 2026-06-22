@@ -6,10 +6,10 @@ const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/extensionController');
 
-router.post('/generate', ctrl.generate);
+router.post('/generate/stream', ctrl.generateStream);
+router.post('/generate/zip', ctrl.generateZip);
 router.get('/', ctrl.getAll);
 router.get('/:id', ctrl.getById);
-router.get('/:id/download', ctrl.downloadZip);
 router.delete('/:id', ctrl.deleteById);
 
 module.exports = router;

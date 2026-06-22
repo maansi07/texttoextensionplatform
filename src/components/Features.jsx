@@ -1,4 +1,5 @@
 import "./Features.css";
+import { motion, useReducedMotion } from 'framer-motion';
 
 const FEATURES = [
   {
@@ -39,7 +40,14 @@ const FEATURES = [
   },
 ];
 
+
 export default function Features() {
+  const reduce = useReducedMotion();
+  const item = {
+    hidden: { opacity: 0, y: 18 },
+    show: (i) => ({ opacity: 1, y: 0, transition: { delay: reduce ? 0 : i * 0.08, duration: reduce ? 0 : 0.45, ease: 'easeOut' } })
+  };
+
   return (
     <section className="features">
       <div className="features-inner">
@@ -49,8 +57,16 @@ export default function Features() {
         </div>
 
         <div className="features-grid">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="feature-card">
+          {FEATURES.map((f, idx) => (
+            <motion.div
+              key={f.title}
+              className="feature-card"
+              variants={item}
+              custom={idx}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.15 }}
+            >
               <div className="feature-icon">{f.icon}</div>
               <div className="feature-content">
                 <div className="feature-top">
@@ -59,7 +75,7 @@ export default function Features() {
                 </div>
                 <p className="feature-desc">{f.desc}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 

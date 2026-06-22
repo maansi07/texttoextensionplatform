@@ -130,6 +130,17 @@
 
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.16s ease, filter 0.16s ease, box-shadow 0.16s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+}
+
 .hero-stats {
   display: flex;
   gap: 40px;

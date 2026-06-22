@@ -33,48 +33,20 @@ Rules:
 - background.js must use chrome.runtime.onInstalled
 - Do not include any explanation outside the JSON`;
 
-async function generateExtension(prompt, browser = 'Chrome', retries = 2) {
+async function generateExtensionStream(prompt, browser = 'Chrome') {
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-flash-latest',
+      model: 'gemini-2.5-flash',
     });
 
     const fullPrompt = `${SYSTEM_PROMPT}\n\nUser requirement: ${prompt}\nTarget browser: ${browser}`;
 
-    const result = await model.generateContent(fullPrompt);
-    const text = result.response.text();
-
-    // Robust JSON extraction by finding the outermost curly braces
-    let cleaned = text.trim();
-    const startIdx = cleaned.indexOf('{');
-    const endIdx = cleaned.lastIndexOf('}');
-    
-    if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) {
-      throw new Error('No valid JSON object found in response');
-    }
-    
-    cleaned = cleaned.substring(startIdx, endIdx + 1);
-
-    const parsed = JSON.parse(cleaned);
-
-    // Validate structure
-    if (!parsed || typeof parsed !== 'object') {
-      throw new Error('Parsed AI response is not an object');
-    }
-    if (!parsed.name || !parsed.files || typeof parsed.files !== 'object') {
-      throw new Error('AI response is missing "name" or "files" object');
-    }
-
-    return parsed;
+    const result = await model.generateContentStream(fullPrompt);
+    return result;
   } catch (error) {
-    if (retries > 0) {
-      console.log(`Retrying... attempts left: ${retries}`);
-      return generateExtension(prompt, browser, retries - 1);
-    }
-
-    console.error('AI generation error:', error.message);
-    throw new Error('AI generation failed: ' + error.message);
+    console.error('AI generation stream error:', error.message);
+    throw new Error('AI generation stream failed: ' + error.message);
   }
 }
 
-module.exports = { generateExtension };
+module.exports = { generateExtensionStream };

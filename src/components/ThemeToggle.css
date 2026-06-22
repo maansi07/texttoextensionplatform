@@ -1,13 +1,18 @@
-css.theme-toggle {
+.theme-toggle {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 6px 10px;
   cursor: pointer;
   font-size: 1rem;
-  transition: all 0.2s;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.theme-toggle:hover {
-  border-color: var(--accent-cyan);
+.theme-toggle:hover { border-color: var(--accent-cyan); }
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle { transition: none; }
 }

@@ -8,6 +8,7 @@ const ctrl = require('../controllers/extensionController');
 
 router.post('/generate/stream', ctrl.generateStream);
 router.post('/generate/zip', ctrl.generateZip);
+router.post('/enhance', ctrl.enhancePrompt);
 router.get('/', ctrl.getAll);
 router.get('/:id', ctrl.getById);
 router.delete('/:id', ctrl.deleteById);

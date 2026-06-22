@@ -98,9 +98,25 @@ function deleteById(req, res) {
   res.status(204).send();
 }
 
+async function enhancePrompt(req, res) {
+  const { prompt } = req.body;
+  if (!prompt || prompt.trim() === '') {
+    return res.status(400).json({ error: 'Prompt is required' });
+  }
+
+  try {
+    const enhancedPrompt = await require('../services/aiService').enhancePrompt(prompt);
+    res.json({ enhancedPrompt });
+  } catch (error) {
+    console.error('Enhance error:', error.message);
+    res.status(500).json({ error: 'Failed to enhance prompt', details: error.message });
+  }
+}
+
 module.exports = {
   generateStream,
   generateZip,
+  enhancePrompt,
   getAll,
   getById,
   deleteById,

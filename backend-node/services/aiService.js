@@ -49,4 +49,23 @@ async function generateExtensionStream(prompt, browser = 'Chrome') {
   }
 }
 
-module.exports = { generateExtensionStream };
+async function enhancePrompt(prompt) {
+  try {
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+    });
+
+    const enhanceSystemPrompt = `Rewrite this vague browser-extension idea into a clear, detailed spec: include the core feature, target behavior, any UI elements needed, and edge cases to consider. Keep it concise — 3-5 sentences. Return ONLY the enhanced prompt, no extra markdown or quotes.`;
+
+    const fullPrompt = `${enhanceSystemPrompt}\n\nOriginal prompt: ${prompt}`;
+
+    const result = await model.generateContent(fullPrompt);
+    const text = result.response.text();
+    return text.trim();
+  } catch (error) {
+    console.error('AI enhance error:', error.message);
+    throw new Error('AI enhance failed: ' + error.message);
+  }
+}
+
+module.exports = { generateExtensionStream, enhancePrompt };

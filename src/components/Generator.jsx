@@ -1,8 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Generator.css";
-import { Search, FileCode, Code, Layout, FileArchive, CheckCircle, Download } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Search, FileCode, Code, Layout, FileArchive, CheckCircle, Download, Sparkles, Undo2, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import SuccessModal from './SuccessModal';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism-tomorrow.css';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-markup';
+import 'prismjs/components/prism-css';
+
+const TYPEWRITER_PROMPTS = [
+  "A dark mode toggle that works on any website",
+  "Block ads and trackers automatically",
+  "Track how long I spend on each tab",
+  "Highlight and save text snippets while browsing",
+  "Show me a motivational quote every new tab"
+];
 
 const EXAMPLE_PROMPTS = [
   "Dark mode toggle for any website with a floating button",
@@ -46,6 +60,79 @@ export default function Generator({ prompt, setPrompt }) {
   const [downloadDone, setDownloadDone] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
+  // Typewriter & Enhance states
+  const [placeholderText, setPlaceholderText] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [originalPrompt, setOriginalPrompt] = useState(null);
+  const [enhancedToast, setEnhancedToast] = useState(false);
+
+  useEffect(() => {
+    if (prompt || isFocused) {
+      setPlaceholderText('');
+      return;
+    }
+    let isMounted = true;
+    let timeout;
+    
+    const typePrompt = async (promptIndex) => {
+      const text = TYPEWRITER_PROMPTS[promptIndex];
+      for (let i = 0; i <= text.length; i++) {
+        if (!isMounted || prompt || isFocused) return;
+        setPlaceholderText(text.substring(0, i) + '|');
+        await new Promise(r => timeout = setTimeout(r, Math.random() * 20 + 30));
+      }
+      if (!isMounted || prompt || isFocused) return;
+      await new Promise(r => timeout = setTimeout(r, 2000));
+      
+      for (let i = text.length; i >= 0; i--) {
+        if (!isMounted || prompt || isFocused) return;
+        setPlaceholderText(text.substring(0, i) + '|');
+        await new Promise(r => timeout = setTimeout(r, 15));
+      }
+      
+      if (isMounted && !prompt && !isFocused) {
+        typePrompt((promptIndex + 1) % TYPEWRITER_PROMPTS.length);
+      }
+    };
+    
+    typePrompt(0);
+    return () => {
+      isMounted = false;
+      clearTimeout(timeout);
+    };
+  }, [prompt, isFocused]);
+
+  const handleEnhance = async () => {
+    if (!prompt.trim() || isEnhancing) return;
+    setIsEnhancing(true);
+    setOriginalPrompt(prompt);
+    try {
+      const response = await fetch('/api/extensions/enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+      if (!response.ok) throw new Error('Enhancement failed');
+      const data = await response.json();
+      setPrompt(data.enhancedPrompt);
+      setEnhancedToast(true);
+      setTimeout(() => setEnhancedToast(false), 3000);
+    } catch (err) {
+      console.error(err);
+      setOriginalPrompt(null);
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
+  const handleUndo = () => {
+    if (originalPrompt) {
+      setPrompt(originalPrompt);
+      setOriginalPrompt(null);
+    }
+  };
+
   useEffect(() => {
     let interval;
     if (isStreaming && stepIndex < STEPS.length - 1) {
@@ -55,6 +142,22 @@ export default function Generator({ prompt, setPrompt }) {
     }
     return () => clearInterval(interval);
   }, [isStreaming, stepIndex]);
+
+  // Trigger Prism syntax highlighting when file or content changes
+  useEffect(() => {
+    if (generated && generated.files) {
+      Prism.highlightAll();
+    }
+  }, [activeFile, generated]);
+
+  const getLanguageClass = (filename) => {
+    if (!filename) return 'language-javascript';
+    if (filename.endsWith('.js')) return 'language-javascript';
+    if (filename.endsWith('.json')) return 'language-json';
+    if (filename.endsWith('.html')) return 'language-markup';
+    if (filename.endsWith('.css')) return 'language-css';
+    return 'language-javascript';
+  };
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
@@ -193,13 +296,77 @@ export default function Generator({ prompt, setPrompt }) {
           <div className="gen-input-panel">
             <div className="input-group">
               <label className="input-label">Describe your extension</label>
-              <textarea
-                className="gen-textarea"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="e.g. A dark mode toggle that works on any website..."
-                rows={5}
-              />
+              <div className="textarea-wrapper">
+                <textarea
+                  className={`gen-textarea ${prompt.length > 500 ? 'over-limit' : ''}`}
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  placeholder={placeholderText || "e.g. A dark mode toggle that works on any website..."}
+                  rows={5}
+                />
+                
+                <div className="textarea-footer">
+                  <div className="enhance-actions">
+                    <AnimatePresence>
+                      {prompt.length > 0 && (
+                        <motion.button
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          className="btn-enhance"
+                          onClick={handleEnhance}
+                          disabled={isEnhancing}
+                        >
+                          {isEnhancing ? <Loader2 size={14} className="spin" /> : <Sparkles size={14} />}
+                          Enhance my prompt
+                        </motion.button>
+                      )}
+                      {originalPrompt && (
+                        <motion.button
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          className="btn-undo"
+                          onClick={handleUndo}
+                        >
+                          <Undo2 size={14} />
+                          Undo
+                        </motion.button>
+                      )}
+                      {enhancedToast && (
+                        <motion.span
+                          initial={{ opacity: 0, x: -5 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0 }}
+                          className="enhance-toast"
+                        >
+                          ✨ Enhanced
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <div className="char-counter-container">
+                    <AnimatePresence>
+                      {prompt.length > 500 && (
+                        <motion.span 
+                          initial={{ opacity: 0 }} 
+                          animate={{ opacity: 1 }} 
+                          exit={{ opacity: 0 }}
+                          className="char-limit-tip"
+                        >
+                          Tip: shorter, focused ideas generate cleaner extensions
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                    <span className={`char-counter ${prompt.length > 500 ? 'error' : prompt.length > 400 ? 'warn' : ''}`}>
+                      {prompt.length} / 500
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="input-row">
@@ -396,9 +563,20 @@ export default function Generator({ prompt, setPrompt }) {
                     {copied ? "✓ Copied!" : "Copy"}
                   </button>
                 </div>
-                <pre className="code-block">
-                  <code>{generated.files && generated.files[activeFile]}</code>
-                </pre>
+                <div className="code-viewer-container">
+                  <div className="code-line-numbers">
+                    {generated.files && generated.files[activeFile]
+                      ? generated.files[activeFile].split('\n').map((_, i) => (
+                          <div key={i} className="line-number">{i + 1}</div>
+                        ))
+                      : null}
+                  </div>
+                  <pre className="code-block">
+                    <code className={getLanguageClass(activeFile)}>
+                      {generated.files ? generated.files[activeFile] : ""}
+                    </code>
+                  </pre>
+                </div>
                 <div className="output-footer">
                   <button
                     className="btn btn-primary"

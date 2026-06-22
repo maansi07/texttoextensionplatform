@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import "./Generator.css";
-import { Search, FileCode, Code, Layout, FileArchive } from 'lucide-react';
+import { Search, FileCode, Code, Layout, FileArchive, CheckCircle, Download } from 'lucide-react';
+import { motion } from 'framer-motion';
+import SuccessModal from './SuccessModal';
 
 const EXAMPLE_PROMPTS = [
   "Dark mode toggle for any website with a floating button",
@@ -39,6 +41,10 @@ export default function Generator({ prompt, setPrompt }) {
   
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [downloadError, setDownloadError] = useState(null);
+
+  const [showModal, setShowModal] = useState(false);
+  const [downloadDone, setDownloadDone] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     let interval;
@@ -159,6 +165,10 @@ export default function Generator({ prompt, setPrompt }) {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+      
+      setDownloadDone(true);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     } catch (err) {
       console.error(err);
       setDownloadError(err.message);
@@ -341,6 +351,27 @@ export default function Generator({ prompt, setPrompt }) {
 
             {generated && currentStep === 'done' && !error && (
               <div className="output-code">
+                <motion.div
+                  className="success-banner"
+                  initial={{ opacity: 0, y: -12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: 'easeOut' }}
+                >
+                  <div className="success-banner-left">
+                    <div className="success-icon-wrap">
+                      <CheckCircle size={18} color="#2dd4bf" />
+                    </div>
+                    <div>
+                      <p className="success-title">Extension ready</p>
+                      <p className="success-sub">manifest.json · content.js · popup.html</p>
+                    </div>
+                  </div>
+                  <button className="download-btn" onClick={() => setShowModal(true)}>
+                    <Download size={15} />
+                    Download .zip
+                  </button>
+                </motion.div>
+
                 <div className="code-tabs">
                   {generated.files && Object.keys(generated.files).map((file) => (
                     <button
@@ -390,6 +421,22 @@ export default function Generator({ prompt, setPrompt }) {
           </div>
         </div>
       </div>
+
+      {showModal && (
+        <SuccessModal
+          extensionName={generated?.name}
+          onDownload={handleDownloadZip}
+          downloadDone={downloadDone}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+
+      {showToast && (
+        <div className="toast">
+          <CheckCircle size={14} color="#2dd4bf" />
+          {generated?.name || 'extension'}.zip downloaded
+        </div>
+      )}
     </section>
   );
 }

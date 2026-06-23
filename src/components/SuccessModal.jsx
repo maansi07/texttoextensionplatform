@@ -1,37 +1,13 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, CheckCircle, FileCode, Copy } from 'lucide-react';
+import { INSTALL_STEPS } from '../constants/installSteps';
 import './SuccessModal.css';
 
-const INSTALL_STEPS = [
-  {
-    number: '1',
-    title: 'Open Chrome Extensions',
-    description: 'Type this in your address bar and press Enter:',
-    code: 'chrome://extensions',
-    extra: 'Then toggle on Developer mode (top-right switch).',
-    icon: 'chrome',
-  },
-  {
-    number: '2',
-    title: 'Unzip the file',
-    description: 'Extract the downloaded .zip to a folder on your desktop.',
-    code: null,
-    extra: 'You should see manifest.json inside the extracted folder.',
-    icon: 'folder',
-  },
-  {
-    number: '3',
-    title: 'Load unpacked',
-    description: 'Click "Load unpacked" and select the extracted folder.',
-    code: null,
-    extra: 'Your extension icon will appear in the Chrome toolbar instantly.',
-    icon: 'puzzle',
-  },
-];
-
-function InstallSteps({ downloadDone }) {
+function InstallSteps({ downloadDone, selectedBrowser }) {
   const [copied, setCopied] = React.useState(false);
+  
+  const currentSteps = INSTALL_STEPS[selectedBrowser] || INSTALL_STEPS.Chrome;
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
@@ -41,7 +17,7 @@ function InstallSteps({ downloadDone }) {
 
   return (
     <div className="install-steps">
-      {INSTALL_STEPS.map((step, idx) => {
+      {currentSteps.map((step, idx) => {
         const isDimmed = !downloadDone && idx > 0;
         return (
           <motion.div
@@ -53,7 +29,7 @@ function InstallSteps({ downloadDone }) {
           >
             <div className="step-left">
               <div className="step-num">{step.number}</div>
-              {idx < INSTALL_STEPS.length - 1 && <div className="step-connector" />}
+              {idx < currentSteps.length - 1 && <div className="step-connector" />}
             </div>
             <div className="step-content">
               <p className="step-title">{step.title}</p>
@@ -76,11 +52,19 @@ function InstallSteps({ downloadDone }) {
           </motion.div>
         );
       })}
+      
+      {selectedBrowser === "Firefox" && (
+        <p className="install-note text-white/40 text-xs mt-4">
+          Note: Firefox unsigned/temporary add-ons are removed when the browser
+          restarts. For permanent installs, the extension must be signed and
+          distributed via addons.mozilla.org.
+        </p>
+      )}
     </div>
   );
 }
 
-export default function SuccessModal({ extensionName, onDownload, downloadDone, onClose }) {
+export default function SuccessModal({ extensionName, selectedBrowser, onDownload, downloadDone, onClose }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
@@ -92,6 +76,7 @@ export default function SuccessModal({ extensionName, onDownload, downloadDone, 
   return (
     <AnimatePresence>
       <motion.div 
+        key="backdrop"
         className="modal-backdrop"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -100,6 +85,7 @@ export default function SuccessModal({ extensionName, onDownload, downloadDone, 
       />
 
       <motion.div
+        key="modal"
         className="success-modal"
         role="dialog"
         aria-modal="true"
@@ -115,7 +101,7 @@ export default function SuccessModal({ extensionName, onDownload, downloadDone, 
             <div className="ext-icon">⚡</div>
             <div>
               <p id="modal-title" className="ext-name">{extensionName || 'Your Extension'}</p>
-              <p className="ext-meta">Chrome MV3 · Ready to install</p>
+              <p className="ext-meta">{selectedBrowser} MV3 · Ready to install</p>
             </div>
           </div>
 
@@ -156,9 +142,9 @@ export default function SuccessModal({ extensionName, onDownload, downloadDone, 
 
         {/* Right panel — install guide */}
         <div className="modal-right">
-          <p className="install-title">Install in Chrome</p>
+          <p className="install-title">Install in {selectedBrowser}</p>
           <p className="install-sub">3 steps · takes under a minute</p>
-          <InstallSteps downloadDone={downloadDone} />
+          <InstallSteps downloadDone={downloadDone} selectedBrowser={selectedBrowser} />
         </div>
         
         <button className="modal-close" onClick={onClose} aria-label="Close modal">

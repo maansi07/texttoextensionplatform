@@ -64,6 +64,8 @@ const STEPS = [
 export default function Generator({ prompt, setPrompt }) {
   const [browser, setBrowser] = useState("Chrome");
   const [category, setCategory] = useState("Productivity");
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const categoryRef = useRef(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generated, setGenerated] = useState(null);
   const [activeFile, setActiveFile] = useState("manifest.json");
@@ -103,6 +105,9 @@ export default function Generator({ prompt, setPrompt }) {
     function handleClickOutside(e) {
       if (enhanceRef.current && !enhanceRef.current.contains(e.target)) {
         setShowEnhanceMenu(false);
+      }
+      if (categoryRef.current && !categoryRef.current.contains(e.target)) {
+        setIsCategoryOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -495,17 +500,32 @@ export default function Generator({ prompt, setPrompt }) {
 
               <div className="input-group">
                 <label className="input-label" style={{ fontSize: '11px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em' }}>CATEGORY</label>
-                <div className="select-wrapper">
-                  <select
+                <div className="select-wrapper" ref={categoryRef}>
+                  <div
                     className="gen-select"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                    style={{ userSelect: 'none', display: 'flex', alignItems: 'center' }}
                   >
-                    {CATEGORIES.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    {category}
+                  </div>
                   <ChevronDown className="select-icon" size={14} color="rgba(255,255,255,0.45)" />
+                  
+                  {isCategoryOpen && (
+                    <div className="custom-select-dropdown">
+                      {CATEGORIES.map((c) => (
+                        <div
+                          key={c}
+                          className={`custom-select-option ${category === c ? 'selected' : ''}`}
+                          onClick={() => {
+                            setCategory(c);
+                            setIsCategoryOpen(false);
+                          }}
+                        >
+                          {c}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -706,6 +726,7 @@ export default function Generator({ prompt, setPrompt }) {
       {showModal && (
         <SuccessModal
           extensionName={generated?.name}
+          selectedBrowser={browser}
           onDownload={handleDownloadZip}
           downloadDone={downloadDone}
           onClose={() => setShowModal(false)}

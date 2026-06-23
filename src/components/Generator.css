@@ -158,6 +158,40 @@
   outline: none;
 }
 
+.custom-select-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: #0d0f17;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 4px;
+  z-index: 50;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-select-option {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.custom-select-option:hover {
+  color: #fff;
+  background: rgba(45, 212, 191, 0.08);
+}
+
+.custom-select-option.selected {
+  background: rgba(45, 212, 191, 0.15);
+  color: #fff;
+}
+
 .quick-examples {
   display: flex;
   align-items: flex-start;

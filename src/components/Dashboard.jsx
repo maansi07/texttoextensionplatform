@@ -10,10 +10,10 @@ const STATUS_COLORS = {
   Generated: "tag-cyan",
 };
 
-const BROWSER_ICONS = {
-  Chrome: "🔵",
-  Firefox: "🦊",
-  Edge: "🔷",
+const BROWSER_META = {
+  Edge: { label: "Edge", color: "#0078D7" },
+  Firefox: { label: "Firefox", color: "#FF7139" },
+  Chrome: { label: "Chrome", color: "#4285F4" },
 };
 
 function formatRelativeTime(isoString) {
@@ -206,7 +206,8 @@ export default function Dashboard({ setActiveTab, setPrompt }) {
           <>
             <div className="dash-search">
               <input
-                className="search-input"
+                className="dashboard-search"
+                style={{ width: "100%", maxWidth: "400px" }}
                 type="text"
                 placeholder="Search extensions..."
                 value={search}
@@ -218,7 +219,7 @@ export default function Dashboard({ setActiveTab, setPrompt }) {
               {["All", "Chrome", "Firefox", "Edge"].map(b => (
                 <button
                   key={b}
-                  className={`filter-btn ${browserFilter === b ? "active" : ""}`}
+                  className={`filter-pill ${browserFilter === b ? "active" : ""}`}
                   onClick={() => setBrowserFilter(b)}
                 >
                   {b}
@@ -241,8 +242,8 @@ export default function Dashboard({ setActiveTab, setPrompt }) {
               ))}
             </div>
           ) : hasExtensions ? (
-            <div className="ext-table">
-              <table>
+            <div className="ext-table-wrap" style={{ width: "100%", overflowX: "auto" }}>
+              <table className="extensions-table" cellSpacing="0" cellPadding="0">
                 <thead>
                   <tr>
                     <th>Extension</th>
@@ -262,14 +263,19 @@ export default function Dashboard({ setActiveTab, setPrompt }) {
                           {ext.name}
                         </div>
                       </td>
-                      <td><span className="browser-badge">{BROWSER_ICONS[ext.browser] || ''} {ext.browser}</span></td>
+                      <td>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: BROWSER_META[ext.browser]?.color || '#fff' }} />
+                          {BROWSER_META[ext.browser]?.label || ext.browser}
+                        </span>
+                      </td>
                       <td>{ext.category}</td>
                       <td>{formatRelativeTime(ext.createdAt)}</td>
-                      <td><span className="status-badge status-ready" style={{ color: '#2dd4bf', background: 'rgba(45,212,191,0.1)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>Ready</span></td>
+                      <td><span className="status-ready">Ready</span></td>
                       <td>
                         <div className="action-btns" style={{ display: 'flex', gap: '8px' }}>
-                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => handleRedownload(ext)}>Download</button>
-                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)' }} onClick={() => handleDelete(ext.id)}>Delete</button>
+                          <button className="action-btn-download" onClick={() => handleRedownload(ext)}>Download</button>
+                          <button className="action-btn-delete" onClick={() => handleDelete(ext.id)}>Delete</button>
                         </div>
                       </td>
                     </tr>

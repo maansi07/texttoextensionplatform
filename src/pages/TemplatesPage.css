@@ -43,12 +43,15 @@
 }
 
 .templates-title {
-  font-size: 2.8rem;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
   font-family: var(--font-display);
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 16px;
   letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #2dd4bf 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
 }
 
 .templates-sub {

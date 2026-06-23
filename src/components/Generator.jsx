@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./Generator.css";
-import { Search, FileCode, Code, Layout, FileArchive, CheckCircle, Download, Sparkles, Undo2, Loader2 } from 'lucide-react';
+import { Search, FileCode, Code, Layout, FileArchive, CheckCircle, Download, Sparkles, Undo2, Loader2, ChevronDown, Eye, EyeOff, Minimize2, Maximize2, SpellCheck, Target, AlignLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SuccessModal from './SuccessModal';
 import Prism from 'prismjs';
@@ -10,21 +10,44 @@ import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-markup';
 import 'prismjs/components/prism-css';
 
-const TYPEWRITER_PROMPTS = [
-  "A dark mode toggle that works on any website",
-  "Block ads and trackers automatically",
-  "Track how long I spend on each tab",
-  "Highlight and save text snippets while browsing",
-  "Show me a motivational quote every new tab"
+const TYPEWRITER_PLACEHOLDERS = [
+  'A dark mode toggle for any website with a floating button...',
+  'A tab manager that groups open tabs by domain...',
+  'A YouTube ad skipper that auto-clicks the skip button...',
+  'A password strength checker with a visual meter...',
+  'A reading time estimator shown on every article...',
+  'A color picker eyedropper tool for any webpage...',
+  'A focus mode that blocks distracting websites...',
+  'A screenshot tool with annotation support...',
 ];
 
-const EXAMPLE_PROMPTS = [
-  "Dark mode toggle for any website with a floating button",
-  "Tab manager that groups tabs by domain",
-  "YouTube ad skipper with auto-click",
-  "Password strength checker with visual meter",
-  "Reading time estimator for articles",
-  "Color picker eyedropper tool",
+const QUICK_EXAMPLES = [
+  'Dark mode toggle for any website with a floating button',
+  'Tab manager that groups tabs by domain',
+  'YouTube ad skipper with auto-click',
+  'Password strength checker with visual meter',
+  'Reading time estimator for articles',
+  'Color picker eyedropper tool',
+  'Focus mode that blocks distracting websites',
+  'Screenshot tool with annotation support',
+];
+
+const icons = {
+  Sparkles,
+  Minimize2,
+  Maximize2,
+  SpellCheck,
+  Target,
+  AlignLeft
+};
+
+const ENHANCE_OPTIONS = [
+  { id: 'enhance', label: 'Enhance', description: 'Rewrite as a detailed technical spec', icon: 'Sparkles' },
+  { id: 'shorten', label: 'Shorten', description: 'Make it more concise', icon: 'Minimize2' },
+  { id: 'lengthen', label: 'Lengthen', description: 'Add more detail and context', icon: 'Maximize2' },
+  { id: 'fix', label: 'Fix grammar', description: 'Correct spelling and grammar', icon: 'SpellCheck' },
+  { id: 'specific', label: 'Make specific', description: 'Add concrete technical requirements', icon: 'Target' },
+  { id: 'simplify', label: 'Simplify', description: 'Use plainer language', icon: 'AlignLeft' },
 ];
 
 const BROWSERS = ["Chrome", "Firefox", "Edge"];
@@ -62,76 +85,120 @@ export default function Generator({ prompt, setPrompt }) {
 
   // Typewriter & Enhance states
   const [placeholderText, setPlaceholderText] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
-  const [isEnhancing, setIsEnhancing] = useState(false);
-  const [originalPrompt, setOriginalPrompt] = useState(null);
+  const [phraseIndex, setPhraseIndex]         = useState(0);
+  const [charIndex, setCharIndex]             = useState(0);
+  const [isDeleting, setIsDeleting]           = useState(false);
+  const [isPaused, setIsPaused]               = useState(false);
+  const [isFocused, setIsFocused]             = useState(false);
+  
+  const [showEnhanceMenu, setShowEnhanceMenu] = useState(false);
+  const [isEnhancing, setIsEnhancing]         = useState(false);
+  const [prevPrompt, setPrevPrompt]           = useState('');
+  const enhanceRef = useRef(null);
+  const textareaRef = useRef(null);
   const [enhancedToast, setEnhancedToast] = useState(false);
 
+  // Close on outside click
   useEffect(() => {
-    if (prompt || isFocused) {
+    function handleClickOutside(e) {
+      if (enhanceRef.current && !enhanceRef.current.contains(e.target)) {
+        setShowEnhanceMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    // Don't run if the user has typed something
+    if (prompt.trim()) {
       setPlaceholderText('');
       return;
     }
-    let isMounted = true;
-    let timeout;
-    
-    const typePrompt = async (promptIndex) => {
-      const text = TYPEWRITER_PROMPTS[promptIndex];
-      for (let i = 0; i <= text.length; i++) {
-        if (!isMounted || prompt || isFocused) return;
-        setPlaceholderText(text.substring(0, i) + '|');
-        await new Promise(r => timeout = setTimeout(r, Math.random() * 20 + 30));
-      }
-      if (!isMounted || prompt || isFocused) return;
-      await new Promise(r => timeout = setTimeout(r, 2000));
-      
-      for (let i = text.length; i >= 0; i--) {
-        if (!isMounted || prompt || isFocused) return;
-        setPlaceholderText(text.substring(0, i) + '|');
-        await new Promise(r => timeout = setTimeout(r, 15));
-      }
-      
-      if (isMounted && !prompt && !isFocused) {
-        typePrompt((promptIndex + 1) % TYPEWRITER_PROMPTS.length);
-      }
-    };
-    
-    typePrompt(0);
-    return () => {
-      isMounted = false;
-      clearTimeout(timeout);
-    };
-  }, [prompt, isFocused]);
 
-  const handleEnhance = async () => {
-    if (!prompt.trim() || isEnhancing) return;
+    if (isPaused) return;
+
+    const currentPhrase = TYPEWRITER_PLACEHOLDERS[phraseIndex];
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        // Typing forward
+        if (charIndex < currentPhrase.length) {
+          setPlaceholderText(currentPhrase.slice(0, charIndex + 1));
+          setCharIndex(c => c + 1);
+        } else {
+          // Finished typing — pause before deleting
+          setIsPaused(true);
+          setTimeout(() => {
+            setIsPaused(false);
+            setIsDeleting(true);
+          }, 1800); // hold the complete phrase for 1.8s
+        }
+      } else {
+        // Deleting
+        if (charIndex > 0) {
+          setPlaceholderText(currentPhrase.slice(0, charIndex - 1));
+          setCharIndex(c => c - 1);
+        } else {
+          // Finished deleting — move to next phrase
+          setIsDeleting(false);
+          setPhraseIndex(i => (i + 1) % TYPEWRITER_PLACEHOLDERS.length);
+        }
+      }
+    }, isDeleting ? 18 : 38); // delete faster than type
+
+    return () => clearTimeout(timeout);
+  }, [prompt, charIndex, isDeleting, isPaused, phraseIndex]);
+
+  function handleChipClick(text) {
+    setPrompt(text);
+    textareaRef.current?.focus();
+  }
+
+  async function handleEnhance(mode) {
+    if (!prompt.trim()) return;
+    setShowEnhanceMenu(false);
     setIsEnhancing(true);
-    setOriginalPrompt(prompt);
+    setPrevPrompt(prompt); // save for undo
+
+    const systemPrompts = {
+      enhance:  `You are a Chrome extension prompt engineer. Rewrite the following into a detailed technical specification for a browser extension, including specific features, UI elements, and behavior. Return ONLY the rewritten prompt, no preamble.`,
+      shorten:  `Shorten the following browser extension description to one concise sentence that still captures the core functionality. Return ONLY the shortened text.`,
+      lengthen: `Expand the following browser extension description with more detail: what it does, how it behaves, what the UI looks like, and any edge cases. Return ONLY the expanded text.`,
+      fix:      `Fix all spelling and grammar errors in the following text. Return ONLY the corrected text, no changes to meaning.`,
+      specific: `Add specific technical requirements to this browser extension description: mention the manifest version, specific DOM selectors or APIs if relevant, and concrete UI behavior. Return ONLY the updated description.`,
+      simplify: `Rewrite the following in simple, plain language that a non-technical user could understand. Return ONLY the simplified text.`,
+    };
+
     try {
-      const response = await fetch('/api/extensions/enhance', {
+      const res = await fetch('/api/enhance-prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({
+          prompt: prompt,
+          systemPrompt: systemPrompts[mode],
+        }),
       });
-      if (!response.ok) throw new Error('Enhancement failed');
-      const data = await response.json();
-      setPrompt(data.enhancedPrompt);
-      setEnhancedToast(true);
-      setTimeout(() => setEnhancedToast(false), 3000);
+      
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        throw new Error(`Server returned ${res.status}`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Enhancement failed');
+      }
+
+      setPrompt(data.enhanced || prompt);
     } catch (err) {
-      console.error(err);
-      setOriginalPrompt(null);
+      console.error('Enhance failed:', err);
+      // If we failed, you might want to show a toast, but for now we just revert or leave it.
     } finally {
       setIsEnhancing(false);
     }
-  };
-
-  const handleUndo = () => {
-    if (originalPrompt) {
-      setPrompt(originalPrompt);
-      setOriginalPrompt(null);
-    }
-  };
+  }
 
   useEffect(() => {
     let interval;
@@ -216,6 +283,25 @@ export default function Generator({ prompt, setPrompt }) {
                 if (parsed.files) {
                   setActiveFile(Object.keys(parsed.files)[0]);
                 }
+
+                // Save to History (LocalStorage)
+                try {
+                  const newEntry = {
+                    id: crypto.randomUUID(),
+                    name: parsed.name || 'Untitled Extension',
+                    prompt: prompt,
+                    browser: browser,
+                    category: category,
+                    files: parsed.files ? Object.entries(parsed.files).map(([name, content]) => ({ name, content })) : [],
+                    createdAt: new Date().toISOString(),
+                    downloads: 0,
+                  };
+                  const existing = JSON.parse(localStorage.getItem('extensio_extensions') || '[]');
+                  localStorage.setItem('extensio_extensions', JSON.stringify([newEntry, ...existing]));
+                } catch (saveError) {
+                  console.error('Failed to save to history:', saveError);
+                }
+
               } else {
                 throw new Error("No valid JSON found in generated output.");
               }
@@ -284,96 +370,102 @@ export default function Generator({ prompt, setPrompt }) {
     <section className="generator">
       <div className="generator-inner">
         <div className="gen-header">
-          <span className="tag tag-purple">⚡ AI Generator</span>
-          <h2 className="gen-title">Extension Builder</h2>
-          <p className="gen-desc">
+          <span className="tag tag-purple gen-badge" style={{ border: '1px solid rgba(124, 58, 237, 0.4)', background: 'transparent' }}>AI Generator</span>
+          <h2 className="gen-title" style={{ fontSize: '28px', fontWeight: 700, color: '#fff', background: 'none', WebkitTextFillColor: 'initial' }}>Extension Builder</h2>
+          <p className="gen-desc" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', maxWidth: '420px', margin: '0 auto' }}>
             Describe your extension and we'll generate the complete source code.
           </p>
         </div>
 
         <div className="gen-layout">
           {/* LEFT: Input Panel */}
-          <div className="gen-input-panel">
-            <div className="input-group">
-              <label className="input-label">Describe your extension</label>
-              <div className="textarea-wrapper">
-                <textarea
-                  className={`gen-textarea ${prompt.length > 500 ? 'over-limit' : ''}`}
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  placeholder={placeholderText || "e.g. A dark mode toggle that works on any website..."}
-                  rows={5}
-                />
-                
-                <div className="textarea-footer">
-                  <div className="enhance-actions">
-                    <AnimatePresence>
-                      {prompt.length > 0 && (
-                        <motion.button
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          className="btn-enhance"
-                          onClick={handleEnhance}
-                          disabled={isEnhancing}
-                        >
-                          {isEnhancing ? <Loader2 size={14} className="spin" /> : <Sparkles size={14} />}
-                          Enhance my prompt
-                        </motion.button>
-                      )}
-                      {originalPrompt && (
-                        <motion.button
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          className="btn-undo"
-                          onClick={handleUndo}
-                        >
-                          <Undo2 size={14} />
-                          Undo
-                        </motion.button>
-                      )}
-                      {enhancedToast && (
-                        <motion.span
-                          initial={{ opacity: 0, x: -5 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0 }}
-                          className="enhance-toast"
-                        >
-                          ✨ Enhanced
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </div>
+          {/* LEFT: Input Panel */}
+          <div className="gen-input-panel" style={{ background: 'transparent', border: 'none', padding: 0, boxShadow: 'none' }}>
+            <div className="textarea-wrapper">
+              <textarea
+                ref={textareaRef}
+                className={`gen-textarea ${prompt.length > 500 ? 'over-limit' : ''}`}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+              />
+              {!prompt && (
+                <div className={`typewriter-overlay ${isFocused ? 'typing' : ''}`} aria-hidden="true">
+                  <span className="typewriter-text">{placeholderText}</span>
+                  <span className="typewriter-cursor" />
+                </div>
+              )}
+              
+              <div className="textarea-footer" style={{ marginTop: '12px' }}>
+                <div className="enhance-actions">
+                  <div className="enhance-wrapper" ref={enhanceRef}>
+                    <button
+                      className="enhance-btn"
+                      onClick={() => setShowEnhanceMenu(prev => !prev)}
+                      disabled={!prompt.trim() || isEnhancing}
+                    >
+                      {isEnhancing ? <Loader2 size={12} className="spinning" /> : <Sparkles size={12} />}
+                      {isEnhancing ? 'Enhancing...' : 'Enhance'}
+                      {!isEnhancing && <ChevronDown size={11} />}
+                    </button>
 
-                  <div className="char-counter-container">
-                    <AnimatePresence>
-                      {prompt.length > 500 && (
-                        <motion.span 
-                          initial={{ opacity: 0 }} 
-                          animate={{ opacity: 1 }} 
-                          exit={{ opacity: 0 }}
-                          className="char-limit-tip"
-                        >
-                          Tip: shorter, focused ideas generate cleaner extensions
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                    <span className={`char-counter ${prompt.length > 500 ? 'error' : prompt.length > 400 ? 'warn' : ''}`}>
-                      {prompt.length} / 500
-                    </span>
+                    {showEnhanceMenu && (
+                      <motion.div
+                        className="enhance-menu"
+                        initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        {ENHANCE_OPTIONS.map(opt => {
+                          const Icon = icons[opt.icon];
+                          return (
+                            <button
+                              key={opt.id}
+                              className="enhance-option"
+                              onClick={() => handleEnhance(opt.id)}
+                            >
+                              <div className="enhance-option-icon">
+                                <Icon size={13} />
+                              </div>
+                              <div>
+                                <p className="enhance-option-label">{opt.label}</p>
+                                <p className="enhance-option-desc">{opt.description}</p>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </motion.div>
+                    )}
                   </div>
+                  {prevPrompt && (
+                    <button
+                      className="undo-btn"
+                      onClick={() => {
+                        setPrompt(prevPrompt);
+                        setPrevPrompt('');
+                      }}
+                    >
+                      <Undo2 size={12} />
+                      Undo
+                    </button>
+                  )}
+                </div>
+
+                <div className="char-counter-container">
+                  <span className={`char-counter ${prompt.length > 500 ? 'error' : prompt.length > 400 ? 'warn' : ''}`}>
+                    {prompt.length} / 500
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="input-row">
+            <div className="input-row" style={{ marginTop: '24px' }}>
               <div className="input-group">
-                <label className="input-label">Target Browser</label>
+                <label className="input-label" style={{ fontSize: '11px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em' }}>BROWSER</label>
                 <div className="btn-group">
-                  {BROWSERS.map((b) => (
+                  {['Chrome', 'Firefox', 'Edge'].map((b) => (
                     <button
                       key={b}
                       className={`btn-group-item ${browser === b ? "active" : ""}`}
@@ -386,29 +478,32 @@ export default function Generator({ prompt, setPrompt }) {
               </div>
 
               <div className="input-group">
-                <label className="input-label">Category</label>
-                <select
-                  className="gen-select"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  {CATEGORIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+                <label className="input-label" style={{ fontSize: '11px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em' }}>CATEGORY</label>
+                <div className="select-wrapper">
+                  <select
+                    className="gen-select"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="select-icon" size={14} color="rgba(255,255,255,0.45)" />
+                </div>
               </div>
             </div>
 
-            <div className="examples-section">
-              <p className="input-label">Quick examples</p>
-              <div className="example-chips">
-                {EXAMPLE_PROMPTS.map((ex) => (
+            <div className="quick-examples">
+              <span className="quick-examples-label">Try:</span>
+              <div className="quick-examples-chips">
+                {QUICK_EXAMPLES.map(example => (
                   <button
-                    key={ex}
+                    key={example}
                     className="example-chip"
-                    onClick={() => setPrompt(ex)}
+                    onClick={() => handleChipClick(example)}
                   >
-                    {ex}
+                    {example}
                   </button>
                 ))}
               </div>
@@ -416,21 +511,18 @@ export default function Generator({ prompt, setPrompt }) {
 
             <button
               className={`btn btn-primary gen-btn ${isGenerating ? "loading" : ""}`}
+              style={{ marginTop: '32px', width: '100%', padding: '13px 20px', fontSize: '14px', fontWeight: 600, borderRadius: '10px' }}
               onClick={handleGenerate}
               disabled={isGenerating || !prompt.trim()}
             >
               {isGenerating ? (
                 <>
                   <span className="spinner"></span>
-                  Generating Extension...
+                  Generating...
                 </>
               ) : (
                 <>
-                  <svg width="16" height="16" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                  </svg>
-                  Generate Extension
+                  ⚡ Generate Extension
                 </>
               )}
             </button>
@@ -439,16 +531,11 @@ export default function Generator({ prompt, setPrompt }) {
           {/* RIGHT: Output Panel */}
           <div className="gen-output-panel">
             {!generated && !isGenerating && !error && (
-              <div className="output-empty">
-                <div className="empty-icon">
-                  <svg width="48" height="48" viewBox="0 0 24 24"
-                    fill="none" stroke="var(--text-muted)" strokeWidth="1">
-                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                    <path d="M9 9h6M9 12h6M9 15h4"/>
-                  </svg>
+              <div className="gen-empty-state" style={{ padding: '80px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="empty-icon-wrap" style={{ opacity: 0.12 }}>
+                  <FileCode size={36} color="#fff" />
                 </div>
-                <p className="empty-title">Your extension code will appear here</p>
-                <p className="empty-sub">Enter a prompt and click Generate</p>
+                <h3 className="empty-title" style={{ fontSize: '15px', color: 'rgba(255,255,255,0.25)', marginTop: '16px', fontWeight: 400 }}>Your extension code will appear here</h3>
               </div>
             )}
 

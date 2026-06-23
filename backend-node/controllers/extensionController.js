@@ -99,13 +99,13 @@ function deleteById(req, res) {
 }
 
 async function enhancePrompt(req, res) {
-  const { prompt } = req.body;
+  const { prompt, action } = req.body;
   if (!prompt || prompt.trim() === '') {
     return res.status(400).json({ error: 'Prompt is required' });
   }
 
   try {
-    const enhancedPrompt = await require('../services/aiService').enhancePrompt(prompt);
+    const enhancedPrompt = await require('../services/aiService').enhancePrompt(prompt, action);
     res.json({ enhancedPrompt });
   } catch (error) {
     console.error('Enhance error:', error.message);

@@ -19,6 +19,26 @@ app.use((req, res, next) => {
 
 app.use('/api/extensions', extensionRoutes);
 
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+app.post('/api/enhance-prompt', async (req, res) => {
+  const { prompt, systemPrompt } = req.body;
+  if (!prompt || !systemPrompt) {
+    return res.status(400).json({ error: 'Missing prompt or systemPrompt' });
+  }
+  try {
+    const result = await model.generateContent({
+      systemInstruction: systemPrompt,
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+    const enhanced = result.response.text().trim();
+    res.json({ enhanced });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',

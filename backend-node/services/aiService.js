@@ -49,13 +49,22 @@ async function generateExtensionStream(prompt, browser = 'Chrome') {
   }
 }
 
-async function enhancePrompt(prompt) {
+async function enhancePrompt(prompt, action = 'elaborate') {
   try {
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
     });
 
-    const enhanceSystemPrompt = `Rewrite this vague browser-extension idea into a clear, detailed spec: include the core feature, target behavior, any UI elements needed, and edge cases to consider. Keep it concise — 3-5 sentences. Return ONLY the enhanced prompt, no extra markdown or quotes.`;
+    let enhanceSystemPrompt = '';
+
+    if (action === 'shorten') {
+      enhanceSystemPrompt = `Condense this browser-extension idea into a single, punchy, clear sentence. Remove any fluff. Return ONLY the enhanced prompt, no extra markdown or quotes.`;
+    } else if (action === 'polish') {
+      enhanceSystemPrompt = `Fix any grammatical errors and improve the phrasing of this browser-extension idea without significantly altering its length or detail. Return ONLY the enhanced prompt, no extra markdown or quotes.`;
+    } else {
+      // Default to elaborate
+      enhanceSystemPrompt = `Rewrite this vague browser-extension idea into a clear, detailed spec: include the core feature, target behavior, any UI elements needed, and edge cases to consider. Keep it concise — 3-5 sentences. Return ONLY the enhanced prompt, no extra markdown or quotes.`;
+    }
 
     const fullPrompt = `${enhanceSystemPrompt}\n\nOriginal prompt: ${prompt}`;
 

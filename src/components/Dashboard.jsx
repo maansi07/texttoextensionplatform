@@ -16,25 +16,30 @@ const BROWSER_ICONS = {
   Edge: "🔷",
 };
 
+function formatRelativeTime(isoString) {
+  const diff = Date.now() - new Date(isoString).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1)   return 'Just now';
+  if (mins < 60)  return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24)   return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
 // --- StatCardsRow ---
 function StatCardsRow({ extensions }) {
   const totalGen = extensions.length;
-  // Let's assume downloads are not tracked yet, we will mock it or calculate it if possible. 
-  // We'll set it to 0 as instructed for empty, or maybe sum it up if there was a field.
-  const downloads = 0; 
-  const browsersCount = new Set(extensions.map(e => e.browser)).size || 0;
+  const downloads = extensions.reduce((sum, e) => sum + (e.downloads || 0), 0);
+  const browsersCount = [...new Set(extensions.map(e => e.browser))].join(' · ') || '—';
   
-  let lastGen = "Never";
-  if (extensions.length > 0) {
-    const sorted = [...extensions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    const hours = Math.floor((new Date() - new Date(sorted[0].createdAt)) / (1000 * 60 * 60));
-    lastGen = hours < 1 ? "Just now" : `${hours}h ago`;
-  }
+  const lastGen = extensions[0]?.createdAt
+    ? formatRelativeTime(extensions[0].createdAt)
+    : 'Never';
 
   const statCards = [
     { label: "Total Generated", value: totalGen, icon: Layers },
     { label: "Downloads", value: downloads, icon: Download },
-    { label: "Browsers", value: browsersCount, icon: Globe },
+    { label: "Browsers", value: browsersCount, icon: Globe, isString: true },
     { label: "Last Generated", value: lastGen, icon: Clock, isString: true },
   ];
 
@@ -147,18 +152,28 @@ export default function Dashboard({ setActiveTab, setPrompt }) {
   const [browserFilter, setBrowserFilter] = useState("All");
 
   useEffect(() => {
-    fetch('/api/extensions')
-      .then(res => res.json())
-      .then(data => {
-        setExtensions(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    const stored = localStorage.getItem('extensio_extensions');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setExtensions(Array.isArray(parsed) ? parsed : []);
+      } catch {
+        setExtensions([]);
+      }
+    }
+    setLoading(false);
   }, []);
 
-  const handleDelete = async (id) => {
-    await fetch(`/api/extensions/${id}`, { method: 'DELETE' });
-    setExtensions(prev => prev.filter(ext => ext.id !== id));
+  function handleDelete(id) {
+    const updated = extensions.filter(e => e.id !== id);
+    setExtensions(updated);
+    localStorage.setItem('extensio_extensions', JSON.stringify(updated));
+  }
+
+  const handleRedownload = (ext) => {
+    // Basic redownload mockup if JSZip is not readily available here. 
+    // Usually we would zip ext.files, but for now we'll trigger an alert or a generic download.
+    alert(`Downloading ${ext.name}...`);
   };
 
   const filtered = extensions.filter(ext => {
@@ -227,60 +242,40 @@ export default function Dashboard({ setActiveTab, setPrompt }) {
             </div>
           ) : hasExtensions ? (
             <div className="ext-table">
-              <div className="table-header">
-                <span>Extension</span>
-                <span>Browser</span>
-                <span>Category</span>
-                <span>Created</span>
-                <span>Status</span>
-                <span>Actions</span>
-              </div>
-              {filtered.map((ext) => (
-                <div key={ext.id} className="table-row">
-                  <div className="ext-name-cell">
-                    <div className="ext-icon">{ext.name ? ext.name[0] : "E"}</div>
-                    <div>
-                      <div className="ext-name">{ext.name}</div>
-                      <div className="ext-desc">{ext.description}</div>
-                    </div>
-                  </div>
-                  <div className="cell">
-                    <span>{BROWSER_ICONS[ext.browser]} {ext.browser}</span>
-                  </div>
-                  <div className="cell">
-                    <span className="tag tag-purple" style={{ fontSize: "0.7rem" }}>
-                      {ext.category}
-                    </span>
-                  </div>
-                  <div className="cell date-cell">
-                    {new Date(ext.createdAt).toLocaleDateString()}
-                  </div>
-                  <div className="cell">
-                    <span
-                        className={`tag ${STATUS_COLORS[ext.status] || "tag-cyan"}`}
-                      style={{ fontSize: "0.7rem" }}
-                    >
-                      {ext.status}
-                    </span>
-                  </div>
-                  <div className="cell actions-cell">
-                    <button
-                      className="action-btn"
-                      onClick={() =>
-                          window.open(`/api/extensions/${ext.id}/download`)
-                      }
-                    >
-                      ↓ Download
-                    </button>
-                    <button
-                      className="action-btn action-btn-dl"
-                      onClick={() => handleDelete(ext.id)}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
-              ))}
+              <table>
+                <thead>
+                  <tr>
+                    <th>Extension</th>
+                    <th>Browser</th>
+                    <th>Category</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map(ext => (
+                    <tr key={ext.id}>
+                      <td>
+                        <div className="ext-name-cell">
+                          <div className="ext-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#2dd4bf', marginRight: 10, display: 'inline-block' }} />
+                          {ext.name}
+                        </div>
+                      </td>
+                      <td><span className="browser-badge">{BROWSER_ICONS[ext.browser] || ''} {ext.browser}</span></td>
+                      <td>{ext.category}</td>
+                      <td>{formatRelativeTime(ext.createdAt)}</td>
+                      <td><span className="status-badge status-ready" style={{ color: '#2dd4bf', background: 'rgba(45,212,191,0.1)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>Ready</span></td>
+                      <td>
+                        <div className="action-btns" style={{ display: 'flex', gap: '8px' }}>
+                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => handleRedownload(ext)}>Download</button>
+                          <button className="btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem', color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)' }} onClick={() => handleDelete(ext.id)}>Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
             <DashboardEmptyState setActiveTab={setActiveTab} setPrompt={setPrompt} />

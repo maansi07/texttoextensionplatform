@@ -29,7 +29,7 @@
 
 .gen-layout {
   display: grid;
-  grid-template-columns: 420px 1fr;
+  grid-template-columns: 560px 1fr;
   gap: 20px;
   align-items: start;
 }
@@ -51,26 +51,27 @@
 
 .gen-textarea {
   width: 100%;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 16px;
   font-size: 14px;
   line-height: 1.6;
-  color: rgba(255,255,255,0.85);
+  color: #ffffff;
   caret-color: #2dd4bf;
   min-height: 120px;
-  resize: none;
+  max-height: 320px;
+  resize: vertical;
   outline: none;
   transition: all 0.2s;
 }
 
 .gen-textarea:focus {
-  border-color: rgba(45,212,191,0.4);
-  box-shadow: 0 0 0 3px rgba(45,212,191,0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
 }
 .gen-textarea::placeholder {
-  color: transparent;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .typewriter-overlay {
@@ -179,9 +180,9 @@
 .example-chip {
   padding: 5px 11px;
   border-radius: 6px;
-  background: transparent;
-  border: 1px dashed rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.35);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 11.5px;
   font-family: var(--font-body);
   cursor: pointer;
@@ -190,9 +191,8 @@
   line-height: 1.35;
 }
 .example-chip:hover {
-  border-color: rgba(45,212,191,0.35);
-  color: rgba(255,255,255,0.75);
-  background: rgba(45,212,191,0.05);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
 .example-chip:active {
   transform: scale(0.97);
@@ -250,14 +250,11 @@
 .enhance-option-icon {
   width: 26px;
   height: 26px;
-  border-radius: 6px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: rgba(255,255,255,0.5);
+  color: rgba(45, 212, 191, 0.8);
   margin-top: 1px;
 }
 .enhance-option-label {

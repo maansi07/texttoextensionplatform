@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 export default function Footer() {
@@ -18,21 +19,21 @@ export default function Footer() {
           <div className="footer-links-grid">
             <div className="footer-col">
               <h4>Product</h4>
-              <a href="#">Generator</a>
-              <a href="#">Templates</a>
-              <a href="#">Dashboard</a>
+              <Link to="/generator">Generator</Link>
+              <Link to="/templates">Templates</Link>
+              <Link to="/dashboard">Dashboard</Link>
             </div>
             <div className="footer-col">
               <h4>Resources</h4>
-              <a href="#">Documentation</a>
-              <a href="#">API Reference</a>
-              <a href="#">GitHub Repo</a>
+              <a href="/docs">Documentation</a>
+              <a href="/api-reference">API Reference</a>
+              <a href="https://github.com/maansi07/texttoextensionplatform" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
             </div>
             <div className="footer-col">
               <h4>Company</h4>
-              <a href="#">About</a>
-              <a href="#">Blog</a>
-              <a href="#">Contact</a>
+              <a href="/#hero">About</a>
+              <a href="/#features">Features</a>
+              <Link to="/contact">Contact</Link>
             </div>
           </div>
         </div>

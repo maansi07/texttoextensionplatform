@@ -1,16 +1,26 @@
 import { useState, useEffect, useRef } from "react";
 import "./Hero.css";
-import { motion, useReducedMotion, useInView } from 'framer-motion';
+import { motion, useReducedMotion, useInView, AnimatePresence } from 'framer-motion';
 import { FileCode, Code, Layout } from 'lucide-react';
 import CountUp from './CountUp';
+
+const VERBS = ['Convert', 'Automate', 'Scale', 'Engage', 'Sell', 'Grow'];
 
 export default function Hero({ setActiveTab }) {
   const reduce = useReducedMotion();
   const [typedCommand, setTypedCommand] = useState("");
   const [showOutput, setShowOutput] = useState(false);
+  const [verbIndex, setVerbIndex] = useState(0);
   
   const statsRef = useRef(null);
   const statsInView = useInView(statsRef, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVerbIndex(i => (i + 1) % VERBS.length);
+    }, 2600);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -69,7 +79,7 @@ export default function Hero({ setActiveTab }) {
   };
 
   return (
-    <section className="hero">
+    <section id="hero" className="hero">
       <div className="hero-bg">
         <div className="hero-orb hero-orb-1"></div>
         <div className="hero-orb hero-orb-2"></div>
@@ -79,16 +89,30 @@ export default function Hero({ setActiveTab }) {
       <div className="hero-inner">
 
         <motion.div initial="hidden" animate="show" variants={container}>
-        <div className="hero-badge">
-          <motion.span className="tag tag-cyan" variants={item}>
-            <span>⚡</span> Developer Platform — Beta
-          </motion.span>
-        </div>
-          <motion.h1 className="hero-title" variants={item}>
-            <span className="hero-title-light">No-Code</span>
-            <br />
-            <span className="hero-title-gradient">Extension Factory</span>
-          </motion.h1>
+          <div className="hero-badge">
+            <motion.span variants={item}>
+              Developer Platform — Beta
+            </motion.span>
+          </div>
+          
+          <motion.div className="hero-headline" variants={item}>
+            <h1 className="hero-line-static">Build Extensions That</h1>
+            <div className="hero-line-animated">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={VERBS[verbIndex]}
+                  className="hero-verb"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -24 }}
+                  transition={{ duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  {VERBS[verbIndex]}
+                </motion.span>
+              </AnimatePresence>
+              <span className="hero-verb-period">.</span>
+            </div>
+          </motion.div>
 
           <motion.div className="hero-content-wrapper" variants={item}>
             <p className="hero-subtitle">
@@ -142,9 +166,9 @@ export default function Hero({ setActiveTab }) {
           </motion.div>
 
           <div className="hero-actions">
-            <div className="btn-glow-wrapper">
+            <div>
               <motion.button
-                className="btn btn-primary btn-glow"
+                className="btn btn-primary"
                 variants={item}
                 whileHover={
                   reduce

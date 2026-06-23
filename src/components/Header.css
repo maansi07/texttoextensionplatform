@@ -45,44 +45,51 @@
 
 .logo-accent { color: var(--accent-cyan); }
 
-.nav-tabs {
-  display: flex;
-  gap: 4px;
+.nav-pill-container {
   position: relative;
-  background: rgba(255,255,255,0.03);
-  padding: 4px;
-  border-radius: 10px;
-}
-
-.nav-tab {
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
+  width: fit-content;
   align-items: center;
-  gap: 6px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  padding: 4px;
+  list-style: none;
+}
+
+.nav-pill-tab {
   position: relative;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: transparent;
-  border: none;
+  z-index: 10;
+  display: block;
   cursor: pointer;
-  font-family: var(--font-body);
+  white-space: nowrap;
+  padding: 8px 16px;
+  font-size: 13px;
   font-weight: 500;
-  color: rgba(255,255,255,0.55);
-  transition: color 180ms ease;
-  z-index: 1;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 150ms ease;
 }
 
-.nav-tab.active { color: #fff; }
-.nav-tab:hover:not(.active) { color: rgba(255,255,255,0.85); }
-
-.nav-pill-bg {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #0f766e, #5b21b6);
-  border-radius: 8px;
-  z-index: 0;
+.nav-pill-tab:hover {
+  color: #ffffff;
 }
 
-.nav-tab-label { position: relative; z-index: 1; display: flex; align-items: center; gap: 6px; }
+.nav-pill-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .nav-pill-tab {
+    padding: 10px 20px;
+  }
+}
 
 .header-actions {
   display: flex;
@@ -90,27 +97,11 @@
   gap: 16px;
 }
 
-.status-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  color: var(--text-muted);
+.nav-version {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.28);
   font-family: var(--font-mono);
-}
-
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent-green);
-  box-shadow: 0 0 8px var(--accent-green);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  letter-spacing: 0.02em;
 }
 
 @media (max-width: 768px) {

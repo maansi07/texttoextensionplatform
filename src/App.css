@@ -35,6 +35,8 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { scroll-behavior: smooth; }
+
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -44,10 +46,14 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, .hero-line-static, .hero-verb, .dashboard-heading {
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: -0.02em;
+}
+
+.nav-version, .terminal-block, code, pre {
+  font-family: var(--font-mono);
 }
 
 .app { min-height: 100vh; display: flex; flex-direction: column; }

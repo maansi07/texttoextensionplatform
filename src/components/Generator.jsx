@@ -371,8 +371,24 @@ export default function Generator({ prompt, setPrompt }) {
       <div className="generator-inner">
         <div className="gen-header">
           <span className="tag tag-purple gen-badge" style={{ border: '1px solid rgba(124, 58, 237, 0.4)', background: 'transparent' }}>AI Generator</span>
-          <h2 className="gen-title" style={{ fontSize: '28px', fontWeight: 700, color: '#fff', background: 'none', WebkitTextFillColor: 'initial' }}>Extension Builder</h2>
-          <p className="gen-desc" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', maxWidth: '420px', margin: '0 auto' }}>
+          <h2 className="gen-title" style={{ 
+            fontSize: 'clamp(28px, 4vw, 44px)', 
+            fontWeight: 700, 
+            fontFamily: 'var(--font-display)', 
+            letterSpacing: '-0.02em', 
+            background: 'linear-gradient(135deg, #2dd4bf 0%, #7c3aed 100%)', 
+            WebkitBackgroundClip: 'text', 
+            WebkitTextFillColor: 'transparent', 
+            backgroundClip: 'text', 
+            marginBottom: '10px' 
+          }}>Extension Builder</h2>
+          <p className="gen-desc" style={{ 
+            fontSize: 'clamp(14px, 1.6vw, 17px)', 
+            color: 'rgba(255,255,255,0.5)', 
+            fontWeight: 400, 
+            maxWidth: '560px', 
+            margin: '0 auto 32px' 
+          }}>
             Describe your extension and we'll generate the complete source code.
           </p>
         </div>

@@ -36,7 +36,7 @@ export default function HowItWorks() {
   };
 
   return (
-    <section className="how-it-works">
+    <section id="how-it-works" className="how-it-works">
       <div className="hiw-inner">
         <div className="hiw-header">
           <span className="tag tag-purple">Workflow</span>

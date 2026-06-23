@@ -1,6 +1,7 @@
 import "./Header.css";
 import { motion, useReducedMotion } from 'framer-motion';
 import { Home, Wand2, LayoutTemplate, LayoutDashboard } from 'lucide-react';
+import NavHeader from "./ui/nav-header";
 
 export default function Header({ activeTab, setActiveTab }) {
   const navLinks = [
@@ -35,39 +36,12 @@ export default function Header({ activeTab, setActiveTab }) {
           </span>
         </div>
 
-        <nav className="nav-tabs">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            return (
-              <button
-                key={link.id}
-                className={`nav-tab ${activeTab === link.id ? "active" : ""}`}
-                onClick={() => setActiveTab(link.id)}
-              >
-                {!reduce && activeTab === link.id && (
-                  <motion.div
-                    layoutId="nav-pill"
-                    className="nav-pill-bg"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-                {reduce && activeTab === link.id && (
-                  <div className="nav-pill-bg" />
-                )}
-                <span className="nav-tab-label">
-                  <Icon size={16} />
-                  {link.label}
-                </span>
-              </button>
-            );
-          })}
-        </nav>
+        <div className="hidden md:block">
+          <NavHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
 
         <div className="header-actions">
-          <div className="status-badge">
-            <span className="status-dot"></span>
-            <span>v1.0.0</span>
-          </div>
+          <span className="nav-version">v1.0.0</span>
 
           <button
             className="btn btn-primary"

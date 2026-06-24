@@ -257,17 +257,22 @@ export default function Generator({ prompt, setPrompt }) {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let fullText = '';
+      let buffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         
-        const text = decoder.decode(value);
-        const lines = text.split('\n').filter(l => l.startsWith('data: '));
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop(); // Keep the last incomplete chunk in the buffer
         
-        for (const line of lines) {
-          const dataStr = line.replace('data: ', '').trim();
-          if (!dataStr) continue;
+        for (const part of parts) {
+          const lines = part.split('\n').filter(l => l.startsWith('data: '));
+          
+          for (const line of lines) {
+            const dataStr = line.replace('data: ', '').trim();
+            if (!dataStr) continue;
           
           try {
             const data = JSON.parse(dataStr);
@@ -318,6 +323,7 @@ export default function Generator({ prompt, setPrompt }) {
           } catch (e) {
             console.error("Error parsing stream chunk:", e);
           }
+        }
         }
       }
     } catch (err) {

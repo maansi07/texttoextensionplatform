@@ -11,11 +11,17 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
-    "archiver": "^7.0.1",
     "adm-zip": "^0.5.9",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "archiver": "^7.0.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
     "express": "^4.21.1",
+    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.7.2",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "uuid": "^11.0.3"
   },
   "devDependencies": {

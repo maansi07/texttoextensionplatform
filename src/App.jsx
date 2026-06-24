@@ -8,11 +8,13 @@ import PricingPage from './pages/PricingPage';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import GeneratorPage from './pages/GeneratorPage';
+import UpgradePage from './pages/UpgradePage';
+import AuthCallback from './pages/AuthCallback';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
-  const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
+  const { user, token } = useAuth();
+  return user && token ? children : <Navigate to="/login" />;
 };
 
 export default function App() {
@@ -21,10 +23,14 @@ export default function App() {
       <Header />
       <main className="app-main">
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+
+          {/* Protected Routes */}
           <Route
             path="/generator"
             element={
@@ -41,6 +47,16 @@ export default function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="/upgrade"
+            element={
+              <PrivateRoute>
+                <UpgradePage />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Catch all */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>

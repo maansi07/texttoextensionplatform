@@ -1,19 +1,13 @@
-# Node / React
-node_modules/
-dist/
 .env
 .env.local
-
-# Java / Maven
-backend/target/
-backend/*.jar
-*.class
-
-# IDE
+.env.*.local
+node_modules/
+dist/
+.DS_Store
 .vscode/
 .idea/
-*.iml
-
-# OS
-.DS_Store
-Thumbs.db
+*.swp
+*.swo
+*~
+.cache/
+build/

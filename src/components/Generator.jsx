@@ -3,6 +3,7 @@ import "./Generator.css";
 import { Search, FileCode, Code, Layout, FileArchive, CheckCircle, Download, Sparkles, Undo2, Loader2, ChevronDown, Eye, EyeOff, Minimize2, Maximize2, SpellCheck, Target, AlignLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SuccessModal from './SuccessModal';
+import PopupPreview from './PopupPreview';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css';
 import 'prismjs/components/prism-javascript';
@@ -66,6 +67,7 @@ export default function Generator({ prompt, setPrompt }) {
   const [category, setCategory] = useState("Productivity");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const categoryRef = useRef(null);
+  const [viewMode, setViewMode] = useState("preview");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generated, setGenerated] = useState(null);
   const [activeFile, setActiveFile] = useState("manifest.json");
@@ -168,10 +170,10 @@ export default function Generator({ prompt, setPrompt }) {
 
     const systemPrompts = {
       enhance:  `You are a Chrome extension prompt engineer. Rewrite the following into a detailed technical specification for a browser extension, including specific features, UI elements, and behavior. Return ONLY the rewritten prompt, no preamble.`,
-      shorten:  `Shorten the following browser extension description to one concise sentence that still captures the core functionality. Return ONLY the shortened text.`,
+      shorten:  `Condense the given browser extension description into a single clear, direct, and actionable sentence. Remove filler words, redundant phrases, and non-essential details. The result should be punchy and focused purely on the core functionality. Return ONLY the shortened text.`,
       lengthen: `Expand the following browser extension description with more detail: what it does, how it behaves, what the UI looks like, and any edge cases. Return ONLY the expanded text.`,
       fix:      `Fix all spelling and grammar errors in the following text. Return ONLY the corrected text, no changes to meaning.`,
-      specific: `Add specific technical requirements to this browser extension description: mention the manifest version, specific DOM selectors or APIs if relevant, and concrete UI behavior. Return ONLY the updated description.`,
+      specific: `Transform the given browser extension description into a highly specific and technical extension specification. Include explicit details such as exact DOM selectors, API methods (e.g., chrome.runtime, chrome.storage), UI components needed (e.g., sidebar, injected button, background worker), and clear state logic. Ensure the output is concrete and ready for development. Return ONLY the updated description.`,
       simplify: `Rewrite the following in simple, plain language that a non-technical user could understand. Return ONLY the simplified text.`,
     };
 
@@ -400,12 +402,11 @@ export default function Generator({ prompt, setPrompt }) {
 
         <div className="gen-layout">
           {/* LEFT: Input Panel */}
-          {/* LEFT: Input Panel */}
           <div className="gen-input-panel" style={{ background: 'transparent', border: 'none', padding: 0, boxShadow: 'none' }}>
             <div className="textarea-wrapper">
               <textarea
                 ref={textareaRef}
-                className={`gen-textarea ${prompt.length > 500 ? 'over-limit' : ''}`}
+                className={`gen-textarea ${prompt.length > 1000 ? 'over-limit' : ''}`}
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onFocus={() => setIsFocused(true)}
@@ -475,8 +476,8 @@ export default function Generator({ prompt, setPrompt }) {
                 </div>
 
                 <div className="char-counter-container">
-                  <span className={`char-counter ${prompt.length > 500 ? 'error' : prompt.length > 400 ? 'warn' : ''}`}>
-                    {prompt.length} / 500
+                  <span className={`char-counter ${prompt.length > 1000 ? 'error' : prompt.length > 800 ? 'warn' : ''}`}>
+                    {prompt.length} / 1000
                   </span>
                 </div>
               </div>
@@ -558,7 +559,7 @@ export default function Generator({ prompt, setPrompt }) {
                 </>
               ) : (
                 <>
-                  ⚡ Generate Extension
+                  Generate Extension
                 </>
               )}
             </button>
@@ -641,28 +642,43 @@ export default function Generator({ prompt, setPrompt }) {
 
             {generated && currentStep === 'done' && !error && (
               <div className="output-code">
-                <motion.div
-                  className="success-banner"
-                  initial={{ opacity: 0, y: -12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
-                >
-                  <div className="success-banner-left">
-                    <div className="success-icon-wrap">
-                      <CheckCircle size={18} color="#2dd4bf" />
-                    </div>
-                    <div>
-                      <p className="success-title">Extension ready</p>
-                      <p className="success-sub">manifest.json · content.js · popup.html</p>
-                    </div>
+                <div className="preview-code-switch">
+                  <button className={viewMode === 'preview' ? 'active' : ''} onClick={() => setViewMode('preview')}>Preview</button>
+                  <button className={viewMode === 'code' ? 'active' : ''} onClick={() => setViewMode('code')}>Code</button>
+                </div>
+                
+                {viewMode === 'preview' ? (
+                  <div style={{ marginBottom: '20px' }}>
+                    <PopupPreview
+                      extensionName={generated.name}
+                      browser={browser}
+                      demoSpec={generated.demoSpec}
+                    />
                   </div>
-                  <button className="download-btn" onClick={() => setShowModal(true)}>
-                    <Download size={15} />
-                    Download .zip
-                  </button>
-                </motion.div>
+                ) : (
+                  <>
+                    <motion.div
+                      className="success-banner"
+                      initial={{ opacity: 0, y: -12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, ease: 'easeOut' }}
+                    >
+                      <div className="success-banner-left">
+                        <div className="success-icon-wrap">
+                          <CheckCircle size={18} color="#2dd4bf" />
+                        </div>
+                        <div>
+                          <p className="success-title">Extension ready</p>
+                          <p className="success-sub">manifest.json · content.js · popup.html</p>
+                        </div>
+                      </div>
+                      <button className="download-btn" onClick={() => setShowModal(true)}>
+                        <Download size={15} />
+                        Download .zip
+                      </button>
+                    </motion.div>
 
-                <div className="code-tabs">
+                    <div className="code-tabs">
                   {generated.files && Object.keys(generated.files).map((file) => (
                     <button
                       key={file}
@@ -717,6 +733,8 @@ export default function Generator({ prompt, setPrompt }) {
                   {downloadLoading && <div style={{marginTop:8, textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem'}}>Preparing download…</div>}
                   {downloadError && <div style={{marginTop:8, textAlign: 'center', color:'var(--accent-error)', fontSize: '0.9rem'}}>Download error: {downloadError}</div>}
                 </div>
+              </>
+            )}
               </div>
             )}
           </div>

@@ -21,28 +21,24 @@
   letter-spacing: 0.1em;
 }
 
-.tb-logos {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 48px;
-  opacity: 0.5;
+.tb-logos-orbit {
+  position: relative;
+  width: 100%;
+  height: 60px;
+  margin-top: 16px;
+  overflow: hidden;
 }
 
-.tb-logo {
+.trusted-by-name {
+  position: absolute;
+  left: 50%;
+  top: 50%;
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  filter: grayscale(100%);
-  transition: opacity 0.2s, filter 0.2s;
-  cursor: default;
-}
-
-.tb-logo:hover {
-  opacity: 1;
-  filter: grayscale(0%);
-  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 24px;
+  color: #ffffff;
+  white-space: nowrap;
+  transition: opacity 200ms ease;
 }
 
 @media (max-width: 600px) {

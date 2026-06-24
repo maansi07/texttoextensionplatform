@@ -22,6 +22,22 @@ The JSON must follow this exact structure:
     "popup.html": "full file content as string",
     "popup.js": "full file content as string",
     "background.js": "full file content as string"
+  },
+  "demoSpec": {
+    "pageType": "article" | "code-editor" | "video" | "form" | "generic-webpage" | "social-feed" | "shopping",
+    "pageContent": {
+      "headline": "string - short, plausible title for the mock page this extension would run on",
+      "meta": "string - short secondary line, e.g. byline/timestamp/price",
+      "bodyBlocks": 3
+    },
+    "interaction": {
+      "trigger": "icon-click" | "page-load" | "button-click" | "hover",
+      "popupTitle": "string",
+      "popupElements": [
+        { "type": "toggle" | "button" | "text" | "input" | "progress" | "badge", "label": "string" }
+      ],
+      "effectOnPage": "string - one short phrase describing what visibly changes on the mock page after the interaction, e.g. 'ad blocked, video continues', 'tabs grouped into folders', 'reading time shown at top of article'"
+    }
   }
 }
 
@@ -31,6 +47,7 @@ Rules:
 - content.js must use chrome.runtime.onMessage.addListener
 - popup.html must be valid HTML with a script tag linking popup.js
 - background.js must use chrome.runtime.onInstalled
+- The demoSpec must be derived specifically from the literal extension description the user typed, and NOT generically from the category. Two extensions in "Productivity" should get different pageType, headline, and effectOnPage values if their descriptions differ.
 - Do not include any explanation outside the JSON`;
 
 async function generateExtensionStream(prompt, browser = 'Chrome') {

@@ -47,15 +47,13 @@
 }
 
 .feature-card {
-  background: rgba(8, 10, 16, 0.95);
   padding: 32px 28px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  transition: background 200ms ease;
 }
 .feature-card:hover {
-  background: rgba(255,255,255,0.025);
+  /* Hover effect is handled by spotlight inner glow, but we can add a subtle tint */
 }
 
 .feature-icon {

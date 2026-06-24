@@ -66,6 +66,29 @@
   transition: all 0.2s;
 }
 
+.gen-textarea:focus { border-color: var(--accent-cyan); }
+
+.preview-code-switch {
+  display: inline-flex;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.preview-code-switch button {
+  padding: 6px 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.preview-code-switch button.active {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+
 .gen-textarea:focus {
   border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);

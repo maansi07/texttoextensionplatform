@@ -1,5 +1,6 @@
 import "./Features.css";
 import { motion, useReducedMotion } from 'framer-motion';
+import SpotlightCard from './ui/SpotlightCard';
 
 import { Cpu, Globe, Download, ShieldCheck, Layers, MousePointerClick } from 'lucide-react';
 
@@ -62,13 +63,13 @@ export default function Features() {
             {FEATURES.map((f, idx) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="feature-card">
+                <SpotlightCard key={f.title} className="feature-card">
                   <div className="feature-icon"><Icon size={20} /></div>
                   <div className="feature-content">
                     <h3 className="feature-name">{f.title}</h3>
                     <p className="feature-desc">{f.body}</p>
                   </div>
-                </div>
+                </SpotlightCard>
               );
             })}
           </div>

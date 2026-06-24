@@ -53,7 +53,7 @@ Rules:
 async function generateExtensionStream(prompt, browser = 'Chrome') {
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
     });
 
     const fullPrompt = `${SYSTEM_PROMPT}\n\nUser requirement: ${prompt}\nTarget browser: ${browser}`;
@@ -69,7 +69,7 @@ async function generateExtensionStream(prompt, browser = 'Chrome') {
 async function enhancePrompt(prompt, action = 'elaborate') {
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
     });
 
     let enhanceSystemPrompt = '';

@@ -9,9 +9,10 @@ const extensionRoutes = require('./routes/extensions');
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
+const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/extensio';
+mongoose.connect(mongoUri)
   .then(() => console.log('✅ MongoDB connected'))
-  .catch((err) => console.log('❌ MongoDB error:', err));
+  .catch((err) => console.log('❌ MongoDB connection warning (ensure MongoDB is running or add MONGODB_URI to .env):', err.message));
 
 // Middleware
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));

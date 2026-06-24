@@ -1,29 +1,49 @@
-import { useState } from "react";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import Generator from "./components/Generator";
-import Features from "./components/Features";
-import Dashboard from "./components/Dashboard";
-import Footer from "./components/Footer";
-import "./App.css";
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+import Header from './components/Header';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import PricingPage from './pages/PricingPage';
+import HomePage from './pages/HomePage';
+import DashboardPage from './pages/DashboardPage';
+import GeneratorPage from './pages/GeneratorPage';
+import './App.css';
+
+const PrivateRoute = ({ children }) => {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/login" />;
+};
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("home");
-
   return (
     <div className="app">
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
-      <main>
-        {activeTab === "home" && (
-          <>
-            <Hero setActiveTab={setActiveTab} />
-            <Features />
-          </>
-        )}
-        {activeTab === "generator" && <Generator />}
-        {activeTab === "dashboard" && <Dashboard />}
+      <Header />
+      <main className="app-main">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route
+            path="/generator"
+            element={
+              <PrivateRoute>
+                <GeneratorPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <DashboardPage />
+              </PrivateRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </main>
-      <Footer />
     </div>
   );
 }

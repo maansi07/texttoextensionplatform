@@ -74,6 +74,7 @@ curl http://localhost:8080/api/extensions/{id}/download \
 ---
 
 ## Project Structure
+```text
 texttoextensionplatform/
 ├── index.html
 ├── package.json
@@ -93,12 +94,13 @@ texttoextensionplatform/
 │   └── pages/
 │       └── TemplatesPage.jsx
 └── backend-node/
-├── server.js
-├── routes/extensions.js
-├── controllers/extensionController.js
-└── services/
-├── aiService.js
-└── zipService.js
+    ├── server.js
+    ├── routes/extensions.js
+    ├── controllers/extensionController.js
+    └── services/
+        ├── aiService.js
+        └── zipService.js
+```
 
 ---
 

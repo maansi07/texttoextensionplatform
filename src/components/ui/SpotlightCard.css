@@ -1,0 +1,57 @@
+.spotlight-card {
+  --radius: 14px;
+  --backdrop: rgba(8, 10, 16, 0.95);
+  --border-spot-opacity: calc(1 * var(--hover-opacity, 0));
+  --spotlight-size: 350px;
+  
+  --GLOW_HUE_BASE: 174;
+  --GLOW_HUE_SPREAD: 90;
+  --glow-hue: calc(var(--GLOW_HUE_BASE) + (var(--xp, 0.5) * var(--GLOW_HUE_SPREAD)));
+  --glow-color: hsl(var(--glow-hue) 90% 65%);
+
+  position: relative;
+  border-radius: var(--radius);
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
+  background: transparent;
+}
+
+/* Outer border glow */
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: calc(var(--radius) + 1px);
+  background: radial-gradient(
+    var(--spotlight-size) circle at var(--x, -9999px) var(--y, -9999px),
+    var(--glow-color) 0%,
+    transparent 100%
+  );
+  z-index: -2;
+  opacity: var(--border-spot-opacity);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Card backdrop */
+.spotlight-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: var(--backdrop);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Inner glow - hide entirely to just have edge lighting */
+.spotlight-card-inner-glow {
+  display: none;
+}
+
+/* Ensure children sit above the backdrop and glow */
+.spotlight-card > *:not(.spotlight-card-inner-glow) {
+  position: relative;
+  z-index: 1;
+}

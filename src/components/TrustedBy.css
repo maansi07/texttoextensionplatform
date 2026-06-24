@@ -1,0 +1,48 @@
+.trusted-by {
+  padding: 60px 0;
+  border-top: 1px solid var(--border);
+}
+
+.trusted-by-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.tb-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.tb-logos-orbit {
+  position: relative;
+  width: 100%;
+  height: 60px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.trusted-by-name {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 24px;
+  color: #ffffff;
+  white-space: nowrap;
+  transition: opacity 200ms ease;
+}
+
+@media (max-width: 600px) {
+  .tb-logos {
+    gap: 24px;
+  }
+}

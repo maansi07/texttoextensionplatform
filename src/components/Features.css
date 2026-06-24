@@ -15,86 +15,85 @@
 .features-header {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .features-title {
+  font-size: 32px;
+  font-weight: 700;
   font-family: var(--font-display);
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  color: white;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.features-subtext {
+  font-size: 14px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 8px;
+  margin-bottom: 0;
 }
 
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 1px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: 48px;
 }
 
 .feature-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 32px 28px;
   display: flex;
-  gap: 16px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  flex-direction: column;
+  gap: 14px;
 }
-
-.feature-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
 .feature-card:hover {
-  border-color: var(--border-accent);
-  background: var(--bg-card-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  /* Hover effect is handled by spotlight inner glow, but we can add a subtle tint */
 }
-
-.feature-card:hover::before { opacity: 1; }
 
 .feature-icon {
-  font-size: 1.6rem;
-  flex-shrink: 0;
-  line-height: 1;
+  color: rgba(255,255,255,0.45);
 }
 
-.feature-content { display: flex; flex-direction: column; gap: 8px; }
-
-.feature-top {
+.feature-content {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 8px;
 }
 
 .feature-name {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  font-family: var(--font-body);
+  margin: 0;
 }
 
-.feature-desc { font-size: 0.83rem; color: var(--text-secondary); line-height: 1.6; }
+.feature-desc {
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 580px) {
+  .features-grid { grid-template-columns: 1fr; }
+}
 
 /* Stack Banner */
 .stack-banner {
   background: linear-gradient(135deg, rgba(0, 229, 255, 0.05), rgba(124, 58, 237, 0.05));
   border: 1px solid rgba(0, 229, 255, 0.15);
   border-radius: var(--radius-lg);
-  padding: 36px;
+  padding: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -102,12 +101,14 @@
 }
 
 .stack-text { display: flex; flex-direction: column; gap: 10px; max-width: 480px; }
+
 .stack-title {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
+
 .stack-desc { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7; }
 
 .stack-badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
@@ -116,18 +117,27 @@
   background: var(--bg-card);
   border: 1px solid var(--border-accent);
   border-radius: 8px;
-  padding: 8px 14px;
+  padding: 8px 16px;
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--text-secondary);
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  cursor: default;
 }
 
-.tech-badge:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+.tech-badge:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
 
 @media (max-width: 960px) {
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   .stack-banner { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-card, .tech-badge { transition: none; transform: none !important; }
 }
 
 @media (max-width: 600px) {

@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
+/* =========================================
+   Extensio.ai — Global Styles
+   Theme: Dark developer UI
+   ========================================= */
 
 :root {
   --bg-primary: #060810;
@@ -18,18 +21,39 @@
   --glow-purple: 0 0 30px rgba(124, 58, 237, 0.15);
   --radius: 12px;
   --radius-lg: 20px;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --accent-rose: #f43f5e;
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
+  --transition-base: all 0.2s ease;
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-error: #ef4444;
+
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { scroll-behavior: smooth; }
+
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: var(--font-mono);
-  line-height: 1.6;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
   overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .hero-line-static, .hero-verb, .dashboard-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.nav-version, .terminal-block, code, pre {
+  font-family: var(--font-mono);
 }
 
 .app { min-height: 100vh; display: flex; flex-direction: column; }
@@ -48,7 +72,7 @@ main { flex: 1; }
   gap: 8px;
   padding: 12px 24px;
   border-radius: var(--radius);
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -105,4 +129,37 @@ main { flex: 1; }
   background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
+}
+
+/* Aurora background: full-viewport fixed layer */
+.app-aurora-bg {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Utility */
+.glass-panel {
+  background: rgba(8, 12, 18, 0.55);
+  backdrop-filter: blur(6px);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Make the real app content render above the waves */
+.app-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Respect reduced motion for CSS micro-interactions */
+@media (prefers-reduced-motion: reduce) {
+  .btn, .example-chip, .btn-group-item, .gen-btn, .copy-btn { transition: none !important; }
+  .app-waves-bg { display: none !important; }
 }

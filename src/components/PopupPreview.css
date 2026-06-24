@@ -1,0 +1,191 @@
+.popup-preview-frame {
+  background: rgba(8,10,16,0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 16px;
+  position: relative;
+}
+.browser-chrome-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dot-red { background: #ff5f56; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green { background: #27c93f; }
+.fake-url-bar {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
+.popup-anchor-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+.ext-icon-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #2dd4bf 0%, #7c3aed 100%);
+}
+.popup-window {
+  margin-left: auto;
+  width: 240px;
+  background: #0d0f17;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+}
+.popup-window-header {
+  padding: 10px 14px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.popup-window-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+
+.mock-btn {
+  background: linear-gradient(135deg, #2dd4bf 0%, #7c3aed 100%);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: default;
+  font-family: var(--font-body);
+}
+
+.mock-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgba(255,255,255,0.9);
+}
+
+.mock-toggle {
+  width: 28px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  position: relative;
+}
+.mock-toggle.on {
+  background: #2dd4bf;
+}
+.mock-toggle-thumb {
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+}
+.mock-toggle.on .mock-toggle-thumb {
+  left: auto;
+  right: 2px;
+}
+
+.mock-text {
+  color: rgba(255,255,255,0.6);
+  line-height: 1.4;
+}
+
+.mock-input {
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: rgba(255,255,255,0.4);
+}
+
+.mock-page-container {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+.mock-page { padding: 28px; }
+.mock-page-title-bar {
+  width: 140px; height: 10px; border-radius: 4px;
+  background: rgba(255,255,255,0.08); margin-bottom: 20px;
+}
+.mock-page-headline {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.85);
+  margin-bottom: 8px;
+}
+.mock-page-meta {
+  font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 18px;
+}
+.mock-page-paragraph {
+  height: 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  margin-bottom: 10px; width: 100%;
+}
+.mock-page-paragraph.short { width: 60%; }
+.mock-code-line {
+  height: 10px; border-radius: 3px;
+  background: rgba(255,255,255,0.07);
+  margin-bottom: 8px;
+}
+
+.mock-cursor {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+}
+
+.ext-icon-dot.clicked {
+  animation: click-pulse 0.3s ease-out;
+}
+
+@keyframes click-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(45,212,191,0.4); }
+  50% { transform: scale(0.9); box-shadow: 0 0 0 4px rgba(45,212,191,0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(45,212,191,0); }
+}
+
+.skeleton-pulse {
+  animation: skel-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes skel-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.effect-toast {
+  display: inline-block;
+  padding: 6px 12px;
+  background: rgba(45,212,191,0.15);
+  border: 1px solid rgba(45,212,191,0.3);
+  color: #2dd4bf;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 16px;
+}

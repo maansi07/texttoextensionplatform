@@ -52,6 +52,46 @@ async function createExtensionZip(files, extensionName) {
     throw err;
   }
 
+  // Strip out missing icon references so Chrome doesn't throw a packing error
+  if (manifest.icons && typeof manifest.icons === 'object') {
+    for (const [size, iconPath] of Object.entries(manifest.icons)) {
+      if (!files[iconPath]) {
+        delete manifest.icons[size];
+      }
+    }
+    if (Object.keys(manifest.icons).length === 0) {
+      delete manifest.icons;
+    }
+  }
+
+  if (manifest.action && manifest.action.default_icon) {
+    const iconVal = manifest.action.default_icon;
+    if (typeof iconVal === 'object' && iconVal !== null) {
+      for (const [size, iconPath] of Object.entries(iconVal)) {
+        if (!files[iconPath]) {
+          delete iconVal[size];
+        }
+      }
+      if (Object.keys(iconVal).length === 0) {
+        delete manifest.action.default_icon;
+      }
+    } else if (typeof iconVal === 'string') {
+      if (!files[iconVal]) {
+        delete manifest.action.default_icon;
+      }
+    }
+  }
+
+  if (manifest.browser_action && manifest.browser_action.default_icon) {
+    delete manifest.browser_action.default_icon;
+  }
+  if (manifest.page_action && manifest.page_action.default_icon) {
+    delete manifest.page_action.default_icon;
+  }
+
+  // Update manifest.json inside files dictionary
+  files['manifest.json'] = JSON.stringify(manifest, null, 2);
+
   // Ensure referenced files exist; if not, create small stubs where reasonable
   function ensureFile(filename, fallbackContent) {
     if (!files[filename]) {
@@ -90,12 +130,30 @@ async function createExtensionZip(files, extensionName) {
     }
   }
 
-  // Write all files into the uniquely-named tmp directory
+  // Write all files into the uniquely-named tmp directory preserving subdirectories safely
   for (const [filename, content] of Object.entries(files)) {
-    const safeFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '');
-    if (safeFilename && typeof content !== 'undefined') {
-      fs.writeFileSync(path.join(tmpDir, safeFilename), content, 'utf8');
+    if (typeof content === 'undefined') continue;
+
+    // Split filename by / or \ to handle subdirectories safely
+    const parts = filename.split(/[/\\]/);
+    
+    // Sanitize each directory/file name component to prevent traversal
+    const safeParts = parts
+      .map(part => part.replace(/[^a-zA-Z0-9._-]/g, ''))
+      .filter(part => part !== '' && part !== '.' && part !== '..');
+      
+    if (safeParts.length === 0) continue;
+    
+    // Resolve full target path
+    const targetFilePath = path.join(tmpDir, ...safeParts);
+    
+    // Ensure the parent directory exists
+    const parentDir = path.dirname(targetFilePath);
+    if (!fs.existsSync(parentDir)) {
+      fs.mkdirSync(parentDir, { recursive: true });
     }
+    
+    fs.writeFileSync(targetFilePath, content, 'utf8');
   }
 
   const zipPath = `${tmpDir}.zip`;

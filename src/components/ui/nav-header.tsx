@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { label: "Home", to: "/" },
   { label: "Generator", to: "/generator" },
   { label: "Templates", to: "/templates" },
+  { label: "Pricing", to: "/pricing" },
   { label: "Dashboard", to: "/dashboard" },
 ];
 

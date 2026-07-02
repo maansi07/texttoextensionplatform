@@ -11,6 +11,11 @@ import CTA from "./components/CTA";
 import Dashboard from "./components/Dashboard";
 import Footer from "./components/Footer";
 import TemplatesPage from "./pages/TemplatesPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import PricingPage from "./pages/PricingPage";
+import { useAuth } from "./context/AuthContext";
+import { Navigate } from "react-router-dom";
 import "./App.css";
 import Aurora from "./components/Aurora";
 
@@ -19,6 +24,7 @@ export default function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -71,8 +77,19 @@ export default function App() {
               </>
             } />
             <Route path="/generator" element={<Generator prompt={prompt} setPrompt={setPrompt} />} />
-            <Route path="/dashboard" element={<Dashboard setActiveTab={setActiveTab} setPrompt={setPrompt} />} />
+            <Route path="/dashboard" element={
+              loading ? (
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>Loading...</div>
+              ) : user ? (
+                <Dashboard setActiveTab={setActiveTab} setPrompt={setPrompt} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            } />
             <Route path="/templates" element={<TemplatesPage setActiveTab={setActiveTab} setPrompt={setPrompt} />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+            <Route path="/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignupPage />} />
           </Routes>
         </main>
         <Footer />

@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import "./Generator.css";
-import { Search, FileCode, Code, Layout, FileArchive, CheckCircle, Download, Sparkles, Undo2, Loader2, ChevronDown, Eye, EyeOff, Minimize2, Maximize2, SpellCheck, Target, AlignLeft } from 'lucide-react';
+import { Search, FileCode, Code, Layout, FileArchive, CheckCircle, Download, Sparkles, Undo2, Loader2, ChevronDown, Eye, EyeOff, Minimize2, Maximize2, SpellCheck, Target, AlignLeft, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import SuccessModal from './SuccessModal';
 import PopupPreview from './PopupPreview';
 import Prism from 'prismjs';
@@ -62,7 +64,30 @@ const STEPS = [
   { id: 'zip',       label: 'Packaging extension',         icon: FileArchive },
 ];
 
+const TEMPLATE_PROMPTS = [
+  "A dark mode toggle extension that works on any website by inverting colors or applying a dark theme.",
+  "An ad blocker extension that blocks network requests to known ad and tracker domains.",
+  "A tab manager extension that groups tabs by domain and allows closing multiple tabs at once.",
+  "A color picker eyedropper tool extension that lets users click anywhere on the page to copy the hex color code.",
+  "An extension that calculates and displays the estimated reading time of the current webpage.",
+  "An extension that automatically adds a visual password strength meter below password input fields.",
+  "A new tab override extension that displays a beautiful daily inspirational quote.",
+  "An extension that can take a full-page screenshot of the current website and save it as an image.",
+  "An extension that saves a history of text copied to the clipboard and lets you quickly re-copy older items.",
+  "A privacy extension that clears cookies and local storage for the current domain with one click.",
+  "A Pomodoro timer extension with a popup UI showing a countdown timer (25 min work, 5 min break).",
+  "A fun extension that triggers a colorful confetti animation on the screen every time the user clicks."
+];
+
+const isTemplatePrompt = (promptText) => {
+  if (!promptText) return false;
+  return TEMPLATE_PROMPTS.some(t => t.toLowerCase().trim() === promptText.toLowerCase().trim());
+};
+
 export default function Generator({ prompt, setPrompt }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(null);
   const [browser, setBrowser] = useState("Chrome");
   const [category, setCategory] = useState("Productivity");
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
@@ -235,6 +260,22 @@ export default function Generator({ prompt, setPrompt }) {
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
+
+    if (!user) {
+      navigate("/login?redirect=generator");
+      return;
+    }
+
+    const isTemplate = isTemplatePrompt(prompt);
+    if (user.plan === "starter" && !isTemplate) {
+      setShowUpgradeModal({
+        type: "starter",
+        title: "AI Custom Generation Locked",
+        message: "Your current Starter plan only supports pre-built templates. Upgrade to Builder or Pro to generate custom browser extensions with AI."
+      });
+      return;
+    }
+
     setIsGenerating(true);
     setIsStreaming(true);
     setGenerated(null);
@@ -344,6 +385,22 @@ export default function Generator({ prompt, setPrompt }) {
 
   const handleDownloadZip = async () => {
     if (!generated || !generated.files) return;
+
+    if (!user) {
+      navigate("/login?redirect=generator");
+      return;
+    }
+
+    const isTemplate = isTemplatePrompt(prompt);
+    if ((user.plan === "builder" || user.plan === "starter") && !isTemplate) {
+      setShowUpgradeModal({
+        type: "builder",
+        title: "ZIP Download Locked",
+        message: "Custom ZIP downloads are a Pro feature. Upgrade to Pro to package and download your custom generated extensions."
+      });
+      return;
+    }
+
     setDownloadLoading(true);
     setDownloadError(null);
     try {
@@ -763,6 +820,128 @@ export default function Generator({ prompt, setPrompt }) {
           {generated?.name || 'extension'}.zip downloaded
         </div>
       )}
+
+      <AnimatePresence>
+        {showUpgradeModal && (
+          <motion.div 
+            className="upgrade-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(10, 15, 30, 0.8)",
+              backdropFilter: "blur(8px)",
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "1rem"
+            }}
+          >
+            <motion.div 
+              className="upgrade-modal-card"
+              initial={{ scale: 0.95, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.95, y: 20, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              style={{
+                background: "rgba(15, 23, 42, 0.95)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "1.5rem",
+                width: "100%",
+                maxWidth: "480px",
+                padding: "2.5rem",
+                position: "relative",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+                color: "#ffffff"
+              }}
+            >
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "48px",
+                height: "48px",
+                borderRadius: "50%",
+                background: showUpgradeModal.type === "starter" ? "rgba(167, 139, 250, 0.15)" : "rgba(34, 211, 238, 0.15)",
+                color: showUpgradeModal.type === "starter" ? "#a78bfa" : "#22d3ee",
+                marginBottom: "1.5rem",
+                marginLeft: "auto",
+                marginRight: "auto"
+              }}>
+                <Lock size={22} />
+              </div>
+              <h3 style={{
+                fontSize: "1.35rem",
+                fontWeight: "700",
+                textAlign: "center",
+                marginBottom: "0.75rem",
+                letterSpacing: "-0.01em"
+              }}>
+                {showUpgradeModal.title}
+              </h3>
+              <p style={{
+                fontSize: "0.9rem",
+                color: "#94a3b8",
+                textAlign: "center",
+                lineHeight: "1.5",
+                marginBottom: "2rem"
+              }}>
+                {showUpgradeModal.message}
+              </p>
+              <div style={{
+                display: "flex",
+                gap: "1rem",
+                justifyContent: "stretch"
+              }}>
+                <button
+                  onClick={() => setShowUpgradeModal(null)}
+                  style={{
+                    flex: 1,
+                    padding: "0.75rem 1.25rem",
+                    background: "rgba(255, 255, 255, 0.06)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    borderRadius: "0.75rem",
+                    color: "#ffffff",
+                    fontWeight: "600",
+                    fontSize: "0.9rem",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  Go Back
+                </button>
+                <button
+                  onClick={() => {
+                    setShowUpgradeModal(null);
+                    navigate("/pricing");
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "0.75rem 1.25rem",
+                    background: "linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)",
+                    border: "none",
+                    borderRadius: "0.75rem",
+                    color: "#ffffff",
+                    fontWeight: "600",
+                    fontSize: "0.9rem",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)"
+                  }}
+                >
+                  View Plans
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

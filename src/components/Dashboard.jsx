@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import CountUp from './CountUp';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { Layers, Download, Globe, Clock, Sparkles, LayoutTemplate } from 'lucide-react';
+import { useAuth } from "../context/AuthContext";
 
 const STATUS_COLORS = {
   Published: "tag-green",
@@ -146,6 +147,7 @@ function DashboardEmptyState({ setActiveTab, setPrompt }) {
 
 // --- Main Dashboard ---
 export default function Dashboard({ setActiveTab, setPrompt }) {
+  const { user } = useAuth();
   const [extensions, setExtensions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -190,12 +192,47 @@ export default function Dashboard({ setActiveTab, setPrompt }) {
   return (
     <section className="dashboard">
       <div className="dashboard-inner">
-        <div className="dash-header">
+        <div className="dash-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1.5rem" }}>
           <div>
             <span className="tag tag-cyan">My Extensions</span>
             <h2 className="dash-title">Generated Extensions</h2>
             <p className="dash-desc">All extensions built with Extensio.ai</p>
           </div>
+          {user && (
+            <div style={{
+              background: "rgba(255, 255, 255, 0.02)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+              borderRadius: "1rem",
+              padding: "0.85rem 1.25rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "1.25rem",
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)"
+            }}>
+              <div>
+                <div style={{ fontSize: "0.68rem", color: "#64748b", textTransform: "uppercase", fontWeight: "700", letterSpacing: "0.05em" }}>Current Tier</div>
+                <div style={{ fontSize: "1.05rem", fontWeight: "700", color: "#ffffff", marginTop: "2px", textTransform: "capitalize" }}>
+                  {user.plan || "starter"}
+                </div>
+              </div>
+              <button 
+                onClick={() => setActiveTab("pricing")}
+                className="btn"
+                style={{
+                  padding: "6px 14px",
+                  fontSize: "0.75rem",
+                  background: "linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)",
+                  border: "none",
+                  borderRadius: "0.5rem",
+                  color: "#ffffff",
+                  fontWeight: "600",
+                  cursor: "pointer"
+                }}
+              >
+                Upgrade
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Stat cards — ALWAYS rendered */}

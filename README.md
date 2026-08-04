@@ -18,7 +18,7 @@ Extensio.ai is an AI-powered no-code browser extension factory.
 The user types a description, selects a browser, and the platform
 uses Gemini 2.0 Flash to generate all required extension files —
 manifest, content scripts, popup UI, and background worker —
-then packages them into a downloadable .zip file.
+then packages them into a downloadable .zip files and then coorelate them.
 
 ---
 

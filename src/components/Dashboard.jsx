@@ -27,7 +27,7 @@ function formatRelativeTime(isoString) {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
-// --- StatCardsRow ---
+// --- StatCardsRow -
 function StatCardsRow({ extensions }) {
   const totalGen = extensions.length;
   const downloads = extensions.reduce((sum, e) => sum + (e.downloads || 0), 0);
